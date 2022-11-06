@@ -4,11 +4,11 @@ date: 2022-11-06 11:58:47 +07:00
 modified: 2022-11-06 16:49:47 +07:00
 tags: [Template]
 description: Concept Note for General Writing.
-image: "/_posts/[Template]concept-notes-formatted/default_note_gif.gif"
+image: "/_posts/Template_concept-notes-formatted/default_note_gif.gif"
 ---
 
 <figure>
-<img src="default_note_gif.gif" alt="default_note_gif">
+<img src="https://raw.githubusercontent.com/avoholo/avoholo.github.io/master/_posts/Template_concept-notes-formatted/default_note_gif.gif" alt="default_note_gif">
 <figcaption>Fig 1. Simple Medium GIF.</figcaption>
 </figure>
 

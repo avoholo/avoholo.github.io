@@ -4,12 +4,12 @@ date: 2022-11-05 11:58:47 +07:00
 modified: 2022-11-06 16:49:47 +07:00
 tags: [Template]
 description: Concept Note for General Writing.
-image: "/_posts/[Template]concept-notes-general/default_note_image.png"
+image: "/_posts/Template_concept-notes-general/default_note_image.png"
 ---
 
 
 <figure>
-<img src="default_note_image.png" alt="default_note_image">
+<img src="https://raw.githubusercontent.com/avoholo/avoholo.github.io/master/_posts/Template_concept-notes-general/default_note_image.png" alt="default_note_image">
 <figcaption>Fig 1. Every idea needs a Medium.</figcaption>
 </figure>
 
