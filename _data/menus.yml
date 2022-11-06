@@ -1,0 +1,24 @@
+- title: Home
+  url: /
+  external: false
+
+- title: Archive
+  url: /archive/
+  external: false
+
+- title: Tags
+  url: /tags/
+  external: false
+
+- title: About
+  url: /about/
+  external: false # set true if you using external link, see below
+
+- title: Career
+  url: /career/
+  external: false # set true if you using external link, see below
+
+# Example:
+# - title: github
+#   url: https://github.com/avoholo
+#   external: true
