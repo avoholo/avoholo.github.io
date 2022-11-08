@@ -7,7 +7,7 @@ description: None.
 image: "/_posts/Template_walkthroughl/default_post_image.png"
 ---
 
-![default_post_image](../images/2022-11-06-walkthrough/default_post_image-16679204354976.png)
+![default_post_image](https://raw.githubusercontent.com/avoholo/avoholo.github.io/master/_posts/Template_walkthrough/default_post_image.png)
 
 
 
