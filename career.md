@@ -2,12 +2,11 @@
 title: Career Timeline
 permalink: /career/
 layout: page
-excerpt: Thanks to amazing people that i met, who help me out from follishness, connecting me with another good person, giving some advice when i'm at a bad things, pulling me from ordinary to be great.
+excerpt: Yet to complete.
 comments: false
 ---
-
-Thanks to amazing people that i met, who help me out from follishness, connecting me with another good person, giving some advice when i'm at a bad things, pulling me from ordinary to be great.
-
-<hr>
+<center>
+Yet to complete.
+</center>
 
 Hopefully the knowledge that I got from them can be useful, and become a charity for them.

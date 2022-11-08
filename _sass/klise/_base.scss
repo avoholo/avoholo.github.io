@@ -279,8 +279,10 @@ blockquote {
   position: relative;
   margin-right: auto;
   margin-left: auto;
-  padding-right: $spacing-full;
-  padding-left: $spacing-full;
+  //padding-right: $spacing-full;
+  //padding-left: $spacing-full;
+  padding-right: 0px;
+  padding-left: 0px;
   @extend %clearfix;
 
   @include media-query($on-mobile) {
