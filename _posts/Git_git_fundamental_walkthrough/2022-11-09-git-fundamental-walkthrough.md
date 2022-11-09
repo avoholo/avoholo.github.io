@@ -7,7 +7,7 @@ description: Git Fundamental Walkthrough
 image: "/_posts/Git_git_fundamental_walkthrough/default_post_image.png"
 ---
 
-![default_post_image](default_post_image.png)
+![default_post_image](https://raw.githubusercontent.com/avoholo/avoholo.github.io/master/_posts/Git_git_fundamental_walkthrough/default_post_image.png)
 
 
 
