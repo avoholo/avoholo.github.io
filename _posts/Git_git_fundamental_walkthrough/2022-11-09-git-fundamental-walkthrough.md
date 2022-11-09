@@ -1,7 +1,7 @@
 ---
-title: "Git Fundamental Walkthrough"
-date: 2022-11-09 20:00:47 +07:00
-modified: 2022-11-09 13:28:47 +07:00
+title: "Git 기본 명령어 walkthrough"
+date: 2022-11-09 00:00:47+0900
+modified: 2022-11-09 00:28:47+0900
 tags: [Git]
 description: Git Fundamental Walkthrough
 image: "/_posts/Git_git_fundamental_walkthrough/default_post_image.png"
@@ -11,15 +11,18 @@ image: "/_posts/Git_git_fundamental_walkthrough/default_post_image.png"
 
 
 
+<br>
+
 ## How it works
+
 <figure>
 <img src="https://raw.githubusercontent.com/avoholo/avoholo.github.io/master/_posts/Git_git_fundamental_walkthrough/how_git_works.png" alt="how_git_works">
 <figcaption>Fig 1. Git Workflows</figcaption>
 </figure>
 
-
-
 ***
+
+<br>
 
 ### 1. Initialize
 
@@ -32,7 +35,7 @@ git init
 Initialized empty Git repository in /Users/dale/temp/our-project/.git/
 ~~~
 
-
+<br>
 
 #### .git의 초기구성
 
@@ -46,7 +49,7 @@ description
 /refs
 ```
 
-
+<br>
 
 #### .gitignore 생성
 
@@ -61,10 +64,7 @@ cat .gitignore
 .env
 ```
 
-
-
-***
-
+<br>
 
 
 ### 2. To Github (remote)
@@ -92,18 +92,18 @@ Host github.com
 
 local에서 remote 접근시 `private key`를 사용하고, github에는 `public key`(id_rsa.pub)를 등록 해야합니다.
 
+<br>
 
+[공식 가이드](https://docs.github.com/en/authentication/troubleshooting-ssh/error-permission-denied-publickey#always-use-the-git-user)에는 `User` 항목에 `git` 을 쓰라고 되어있는데,  절반 이상의 개인 블로그나 StackOverflow에는 자신의 **github username**을 사용하라고 하네요.
 
-[공식 가이드](https://docs.github.com/en/authentication/troubleshooting-ssh/error-permission-denied-publickey#always-use-the-git-user)에는 `User` 항목에 `git` 을 쓰라고 되어있는데,  
-
-절반 이상의 개인 블로그나 StackOverflow에는 자신의 **github username**을 사용하라고 하네요
-
-이것 때문에 삽질을 30분 동안 했는데, 역시 인터넷에는 검증되지 않은 정보가 많은것 같습니다.
+이것 때문에 삽질을 30분 동안 했는데, 인터넷에는 **검증되지 않은 정보가 많은것 같습니다.**
 
 <figure>
 <img src="https://raw.githubusercontent.com/avoholo/avoholo.github.io/master/_posts/Git_git_fundamental_walkthrough/github_docs.png" alt="github_docs">
-<figcaption>Fig 1. Git Workflows</figcaption>
+<figcaption>Fig 2. Github Official Docs</figcaption>
 </figure>
+
+
 
 
 아래 명령어로 **인증 테스트**를 할 수 있습니다.
@@ -112,7 +112,7 @@ local에서 remote 접근시 `private key`를 사용하고, github에는 `public
 ssh -vT github.com
 ~~~
 
-`~/.ssh/config` 등록 해놨던 설정대로 접속이 된걸 확인 할 수 있습니다.
+`~/.ssh/config`에 등록 해놨던 설정대로 접속이 된걸 확인 할 수 있습니다.
 
 ~~~bash
 $ ssh -vT git@github.com
@@ -123,25 +123,22 @@ Bytes per second: sent 7578.5, received 6371.9
 debug1: Exit status 1
 ~~~
 
-
+<br>
 
 #### Remote Url
 
-만약 url이 https url로 설정되어 있다면, 인증시 Username과 Password를 요구합니다. `ssh url`로 바꿉니다.
+만약 url이 `https` url로 설정되어 있다면, 인증시 `username`과 `password`를 요구합니다. `ssh url`로 바꿉니다.
 
 ~~~bash
 git remote set-url git@github.com:avoholo/avoholo.github.io.git
 ~~~
 
-
-
-
+<br>
 
 #### Status (작업 시작 하기전에 항상 먼저 체크하자)
 
 ~~~ bash
 git status
-
 
 On branch master
 Your branch is up to date with 'origin/master'.
@@ -149,7 +146,7 @@ Your branch is up to date with 'origin/master'.
 nothing to commit, working tree clean
 ~~~
 
-
+<br>
 
 #### Staging Area
 
@@ -159,7 +156,7 @@ git add .
 
 현재까지 작업중이던 **모든** 파일들을 staging area(무대)에 올립니다.
 
-
+<br>
 
 #### Commit
 
@@ -173,7 +170,7 @@ git commit -m "commit message"
 
 "commit message" 부분에는 이 커밋에 대한 보조 설명이라던지 그냥 단순하게 당시 날짜를 적어도 무방합니다.
 
-
+<br>
 
 #### Remote & Origin (초기 설정에 필요)
 
@@ -187,7 +184,7 @@ git config user.email "avoholo9@gmail.com"
 
  ***tip:*** `.git` 을 확인해서 remote repo가 어디로 설정되어있는지 확인하세요.
 
-
+<br>
 
 #### Branch
 
@@ -197,7 +194,7 @@ git branch -M main
 
 만약 `master`외에 `main` Branch로 변경하고 싶다면 해당 명령어로 바꿀 수 있습니다. *Default*는 `master` 입니다.
 
-
+<br>
 
 #### Push
 
@@ -211,9 +208,11 @@ git push -u origin master
 
 그러면 한번에 두 가지 사이트에 `origin` 이름만 바꿔서 `push`할 수 있습니다.
 
+<br>
 
+### 3. Errors
 
-#### Error: Unsafe Repository
+#### Unsafe Repository
 
 해당 오류를 수정하는 방법은 간단합니다. 이미 로그에도 어떻게 해야할지 나와있습니다.
 
@@ -225,7 +224,7 @@ git config --global --add safe.directory /directory
 git config --global --add safe.directory '%(prefix)///172.*.*.*/Avoholo/Workspace/JeKyll/avoholo.github.io/avoholo_blog'
 ~~~
 
-
+<br>
 
 > Related :
 > <a href="/git-fundamental-walkthrough">Git Fundamental Walkthrough </a> 
