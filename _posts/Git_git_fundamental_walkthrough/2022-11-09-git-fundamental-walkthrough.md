@@ -1,7 +1,7 @@
 ---
 title: "Git Fundamental Walkthrough"
 date: 2022-11-09 20:00:47 +07:00
-modified: 2022-11-09 20:28:47 +07:00
+modified: 2022-11-09 13:28:47 +07:00
 tags: [Git]
 description: Git Fundamental Walkthrough
 image: "/_posts/Git_git_fundamental_walkthrough/default_post_image.png"
@@ -94,16 +94,14 @@ local에서 remote 접근시 `private key`를 사용하고, github에는 `public
 
 
 
-[공식 가이드]: https://docs.github.com/en/authentication/troubleshooting-ssh/error-permission-denied-publickey#always-use-the-git-user
-
-에는 `User` 항목에 `git` 을 쓰라고 되어있는데,  
+[공식 가이드](https://docs.github.com/en/authentication/troubleshooting-ssh/error-permission-denied-publickey#always-use-the-git-user)에는 `User` 항목에 `git` 을 쓰라고 되어있는데,  
 
 절반 이상의 개인 블로그나 StackOverflow에는 자신의 **github username**을 사용하라고 하네요
 
 이것 때문에 삽질을 30분 동안 했는데, 역시 인터넷에는 검증되지 않은 정보가 많은것 같습니다.
 
 <figure>
-<img src="https://raw.githubusercontent.com/avoholo/avoholo.github.io/master/_posts/Git_git_fundamental_walkthrough/github_docs.PNG" alt="github_docs">
+<img src="https://raw.githubusercontent.com/avoholo/avoholo.github.io/master/_posts/Git_git_fundamental_walkthrough/github_docs.png" alt="github_docs">
 <figcaption>Fig 1. Git Workflows</figcaption>
 </figure>
 
