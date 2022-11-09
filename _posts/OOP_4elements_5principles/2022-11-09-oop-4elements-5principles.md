@@ -8,9 +8,10 @@ image: "/_posts/OOP_4elements_5principles/default_post_image.png"
 ---
 
 <figure>
-<img src="default_post_image.png" alt="default_post_image">
+<img src="https://raw.githubusercontent.com/avoholo/avoholo.github.io/master/_posts/OOP_4elements_5principles/default_post_image.png" alt="default_post_image">
 <figcaption>Fig 1. Principles of Object-Oriented Design.</figcaption>
 </figure>
+
 이번 포스트에선 객체지향 디자인의 뼈대가 되는 4요소 5원칙을 알아볼 예정이다. 
 
 요소들과 원칙들을 정의시 최대한 **나의 워딩으로 사용**하고, **두줄로 요약** 해보려고한다.
