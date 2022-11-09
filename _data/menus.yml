@@ -2,12 +2,12 @@
   url: /
   external: false
 
-- title: Archive
+- title: Search
   url: /archive/
   external: false
 
-- title: Tags
-  url: /tags/
+- title: Category
+  url: /category/
   external: false
 
 - title: About

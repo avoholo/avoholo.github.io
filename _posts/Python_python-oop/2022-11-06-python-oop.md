@@ -2,7 +2,7 @@
 title: Introduction to OOP in Python
 date: 2022-11-05 11:58:47 +07:00
 modified: 2022-11-06 16:49:47 +07:00
-tags: [Python, Object-Oriented Programming]
+tags: [Python]
 description: Python Object-Oriented Programming.
 image: "/_posts/apa-itu-shell/shell_evolution.png"
 ---
