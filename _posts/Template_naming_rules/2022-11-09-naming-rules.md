@@ -26,7 +26,7 @@ image: "/_posts/Template_naming_rules/default_post_image.png"
 
 이렇게 제목을 짓는게 정보를 찾는데도 빠르고, '책에 대한 포스트다' 라는 걸 명시하여 단순히 인터넷에서 찾은 정보가 아닌 **정독하여 읽은 글**이라는걸 알 수 있게된다.
 
-
+<br>
 
 #### 2. Category
 
@@ -34,7 +34,7 @@ image: "/_posts/Template_naming_rules/default_post_image.png"
 
 한 주제에 대해 **하나의 Cateogry만 부여하자**.
 
-
+<br>
 
 #### 3. Title Naming Rule
 
@@ -54,7 +54,7 @@ image: "/_posts/Template_naming_rules/default_post_image.png"
 
 `DAG`라는 단어를 특별히 `in Spark`와 같이 묶은 이유는, DAG는 Spark에만 존재하는 개념이 아니기에, 뒤에 in ~ 를 붙혀준다.
 
-
+<br>
 
 > Related :
 > <a href="/concept-notes">Concept Notes - First Note (1) </a>,

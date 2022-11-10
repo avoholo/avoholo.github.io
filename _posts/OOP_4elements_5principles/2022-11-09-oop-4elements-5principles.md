@@ -39,7 +39,7 @@ image: "/_posts/OOP_4elements_5principles/default_post_image.png"
 모든 클래스는 각각 하나의 책임만 가져야 한다.
 ~~~
 <p>&#8618;   특수한 목적을 수행하도록 만든 클래스는 해당 목적 외에 다른 기능을 수행하면 안된다.</p>
-<p style="font-family: Sans-Serif"><b>Keyword</b></p>
+###### 🗝️ Keyword
 - SRP
 - Refactoring
 - Shotgun Surgery
@@ -53,7 +53,7 @@ image: "/_posts/OOP_4elements_5principles/default_post_image.png"
 ~~~
 
 <p>&#8618; 기존의 코드를 변경하지 않으면서 기능을 추가할 수 있도록 설계되어야 한다.</p>
-<p style="font-family: Sans-Serif"><b>Keyword</b></p>
+###### 🗝️ Keyword
 - OCP
 
 <br>
@@ -65,8 +65,7 @@ image: "/_posts/OOP_4elements_5principles/default_post_image.png"
 ~~~
 
 <p>&#8618; 자식 클래스는 부모 클래스의 책임을 무시하거나 재정의하지 않고 확장만 수행하도록 해야한다.</p>
-<p style="font-family: Sans-Serif"><b>Keyword</b></p>
-
+###### 🗝️ Keyword
 - LSP
 - Design By Contract
 
@@ -79,7 +78,7 @@ image: "/_posts/OOP_4elements_5principles/default_post_image.png"
 ~~~
 
 <p>&#8618; 하나의 일반적인 인터페이스보다 여러 개의 구체적인 인터페이스가 낫다.</p>
-<p style="font-family: Sans-Serif"><b>Keyword</b></p>
+###### 🗝️ Keyword
 - ISP
 - Delegation 
 
@@ -92,7 +91,7 @@ image: "/_posts/OOP_4elements_5principles/default_post_image.png"
 ~~~
 
 <p>&#8618; 구체적인 클래스보다는 인터페이스나 추상 클래스와 관계를 맺어야 한다.</p>
-<p style="font-family: Sans-Serif"><b>Keyword</b></p>
+###### 🗝️ Keyword
 - DIP
 - IOC
 - Hook Method

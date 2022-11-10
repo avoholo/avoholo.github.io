@@ -1,15 +1,19 @@
 // Fonts preferences
-$sans-family: Roboto, sans-serif;
+//$sans-family: Roboto, sans-serif;
+$sans-family: Noto Sans, sans-serif;
 $mono-family: Consolas, monospace;
-$base-font-size: 16px;
+//$base-font-size: 16px;
+$base-font-size: 16.5px;
 $medium-font-size: $base-font-size * 0.938;
 $small-font-size: $base-font-size * 0.875;
 $base-line-height: 1.85;
 
 // Font weight
-// $light-weight: 300; // uncomment if necessary
-$normal-weight: 400;
-$bold-weight: 700;
+//$light-weight: 300; // uncomment if necessary
+//$normal-weight: 400;
+$normal-weight: 500;
+//$bold-weight: 600;
+$bold-weight: 600;
 // $black-weight: 900; // uncomment if necessary
 
 //Light Colors
@@ -21,22 +25,25 @@ $black: #0d122b;
 $light: #ececec;
 $smoke: #d2c7c7;
 $gray: #6b7886;
-$white: #fff;
+//$white: #fff; --> light-theme background color.
+$white: #fffffb;
 
 // Dark Colors
 $dark-text-base-color: #c7bebe;
 $dark-text-link-blue: #ff5277;
 $dark-text-link-blue-active: #ff2957;
-
-$dark-black: #131418;
+//#0B281D
+//$dark-black: #131418; --> dark-theme background color.
+$dark-black: #0E3326;
 $dark-white: #eaeaea;
-$dark-light: #1b1d25;
+//$dark-light: #1b1d25; --> inline code background color.
+$dark-light: #505050;
 $dark-smoke: #4a4d56;
 $dark-gray: #767f87;
 
 // Width of the content area
-$wide-size: 890px;
-$narrow-size: 720px;
+$wide-size: 900px;
+$narrow-size: 900px;
 
 // Padding unit
 $spacing-full: 30px;
