@@ -102,9 +102,7 @@ Hadoop does not suit for small data. [**(HDFS)** **Hadoop distributed file syste
 
 In Hadoop, with a parallel and distributed algorithm, the MapReduce process large data sets. There are tasks that we need to perform: Map and Reduce and, MapReduce requires a lot of time to perform these tasks thereby increasing latency. Data is distributed and processed over the cluster in MapReduce which increases the time and reduces processing speed.
 
-
-
-
+<br>
 
 
 
