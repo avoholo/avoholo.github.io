@@ -181,8 +181,10 @@
 
 // Author
 .author {
-  margin-top: 6.3rem;
-  margin-bottom: 7.2rem;
+  //margin-top: 6.3rem;
+  margin-top: 6.2rem;
+  //margin-bottom: 7.2rem;
+  margin-bottom: 7rem;
   text-align: center;
 
   @include media-query($on-mobile) {
@@ -203,7 +205,8 @@
   }
 
   .author-name {
-    font-size: 1.7em;
+    font-size: 2em;
+    font-family: Georgia, 'Times New Roman', Times, serif;
     margin-bottom: 2px;
   }
 
@@ -231,7 +234,8 @@
   @extend %clearfix;
 
   &:not(:first-child) {
-    border-top: 1px solid $light;
+    //border-top: 1px solid $light;
+    border-top: auto;
   }
 
   .post-item-date {
