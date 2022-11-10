@@ -76,7 +76,6 @@ echo "uvicorn main:app --reload --host=0.0.0.0 --port=8000" > run.sh && chmod +x
 
 
 ### Pydantic
-
 Python Type Hint를 사용한 데이터 유효성 검사 및 설정 관리를 Pydantic 패키지를 통해 쉽게 할 수 있다.
 
 ~~~python

@@ -171,21 +171,21 @@
   }
 
   h1 {
-    @include relative-font-size(1.5);
+    @include relative-font-size(2.5);
     @include media-query($on-mobile) {
       font-size: $mobile-base-font-size * 1.5;
     }
   }
 
   h2 {
-    @include relative-font-size(1.375);
+    @include relative-font-size(2);
     @include media-query($on-mobile) {
       font-size: $mobile-base-font-size * 1.375;
     }
   }
 
   h3 {
-    @include relative-font-size(1.25);
+    @include relative-font-size(1.75);
     @include media-query($on-mobile) {
       font-size: $mobile-base-font-size * 1.25;
     }
@@ -194,7 +194,7 @@
   }
 
   h4 {
-    @include relative-font-size(1.25);
+    @include relative-font-size(1.35);
     @include media-query($on-mobile) {
       font-size: $mobile-base-font-size * 1.25;
     }
