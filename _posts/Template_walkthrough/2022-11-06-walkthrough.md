@@ -101,7 +101,7 @@ def root():
 def get_posts():
 	return {"data": "this is your post."}
 
-@app.post("/createposts")
+@app.post("/posts")
 def create_posts(new_post: Post):
 	print(new_post.dict)
 	return {"data": new_post}

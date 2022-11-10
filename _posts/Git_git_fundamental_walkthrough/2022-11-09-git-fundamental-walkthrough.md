@@ -210,7 +210,23 @@ git push -u origin master
 
 <br>
 
-### 3. Errors
+### 3. Remote vs Origin
+
+#### Remote update
+
+remote 환경에서 변경되었던 부분을 up-to date로 업데이트 합니다. 
+
+~~~bash
+git remote update && git status
+~~~
+
+- `git status -uno` : Tracking 중인 브랜치가 remote 환경과 얼마나 다른지 알려줍니다.
+- `git remote -v update` : 어떤 브랜치가 업데이트 되었는지 확인 할 수 있습니다.
+- `git git show-branch *master` : 
+
+<br>
+
+### 4. Errors
 
 #### Unsafe Repository
 
