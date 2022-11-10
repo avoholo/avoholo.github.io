@@ -32,7 +32,7 @@ image: "/_posts/Template_naming_rules/default_post_image.png"
 
 개인적으로 Tag 남발이나 하나의 주제에 대해 여러가지 Category를 부여하는 것을 좋아하지 않는다. 한개의 포스트에 여러개의 Category를 부여하게 된다면 UI 상으론 중복된 Post가 보일것이다. 심지어 포스트가 1000개 이상으로  늘어나게 될 경우, 관리가 더욱 어려워 진다.
 
-한 주제에 대해 **하나의 Cateogry만 부여하자**.
+한 주제에 대해 **하나의 Category만 부여하자**.
 
 <br>
 
@@ -53,6 +53,20 @@ image: "/_posts/Template_naming_rules/default_post_image.png"
 따라서, Spark에 대한 전반적인 내용을 `Spark Introduction` 이란 제목으로 쓰고, 나머지 주제들을 `Spark Context`, `Spark Resource Manager`, `Spark Executors`, `DAG in Spark` 이런식으로 제목을 지을 수 있을것 같다.
 
 `DAG`라는 단어를 특별히 `in Spark`와 같이 묶은 이유는, DAG는 Spark에만 존재하는 개념이 아니기에, 뒤에 in ~ 를 붙혀준다.
+
+<br>
+
+
+
+#### 4. Useful Emojis
+
+###### 🗝️ Keyword
+
+##### &#9989;Do - Use ORC or Parquet File format
+
+### Limitation&#10060;
+
+**Solution &#10004;** 
 
 <br>
 
