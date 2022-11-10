@@ -135,7 +135,7 @@ git remote set-url git@github.com:avoholo/avoholo.github.io.git
 
 <br>
 
-#### Status (작업 시작 하기전에 항상 먼저 체크하자)
+#### Status (항상 먼저 체크하자)
 
 ~~~ bash
 git status
