@@ -289,7 +289,7 @@
     font-size: $small-font-size;
 
     @include media-query($on-mobile) {
-      font-size: $mobile-small-font-size - 5;
+      font-size: $mobile-small-font-size;
     }
   }
   a.footer_item {
