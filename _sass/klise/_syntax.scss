@@ -24,9 +24,12 @@ code {
 pre.highlight, pre {
   //margin: 0 -27px;
   margin: 1px;
+
+  //    margin: 0 calc(51% - 51vw);
+  //    padding-left: 20px;
   @include media-query($on-mobile) {
-    margin: 0 calc(51% - 51vw);
-    padding-left: 20px;
+    margin: 0 calc(51% - 49.5vw);
+    padding-left: 10px;
   }
   border: 1px solid rgba(128,128,128,0.1);
   background-color: #1a1b21;

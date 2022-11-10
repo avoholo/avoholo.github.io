@@ -7,6 +7,10 @@ $base-font-size: 16.5px;
 $medium-font-size: $base-font-size * 0.938;
 $small-font-size: $base-font-size * 0.875;
 $base-line-height: 1.85;
+$mobile-base-font-size: $base-font-size - 2.5px;
+$mobile-title-font-size: $base-font-size - 2px;
+$mobile-medium-font-size: $mobile-base-font-size * 0.938;
+$mobile-small-font-size: $mobile-base-font-size * 0.875;
 
 // Font weight
 //$light-weight: 300; // uncomment if necessary
@@ -51,7 +55,7 @@ $spacing-half: $spacing-full / 2;
 
 // State of devices
 //$on-mobile: 768px;
-$on-mobile: 700px;
+$on-mobile: 768px;
 $on-tablet: 769px;
 $on-desktop: 1024px;
 $on-widescreen: 1152px;
@@ -64,6 +68,10 @@ $on-widescreen: 1152px;
 
 @mixin relative-font-size($ratio) {
   font-size: $base-font-size * $ratio;
+}
+
+@mixin mobile-relative-font-size($ratio) {
+  font-size: $mobile-base-font-size * $ratio;
 }
 
 // Import sass files

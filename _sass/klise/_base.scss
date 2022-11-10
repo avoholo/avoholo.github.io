@@ -56,6 +56,10 @@ body {
   font-feature-settings: "kern" 1;
   font-kerning: normal;
   box-sizing: border-box;
+
+  @include media-query($on-mobile) {
+    font-size: $mobile-base-font-size;
+  }
 }
 
 // Set `margin-bottom` to maintain vertical rhythm
@@ -306,6 +310,10 @@ u {
 // Small
 small {
   font-size: $small-font-size;
+
+  @include media-query($on-mobile) {
+    font-size: $mobile-small-font-size;
+  }
 }
 
 // Superscript
@@ -316,6 +324,10 @@ sup {
   font-size: small;
   position: relative;
   margin-right: 2px;
+
+  @include media-query($on-mobile) {
+    font-size: $mobile-small-font-size - 5px;
+  }
 }
 
 // Table

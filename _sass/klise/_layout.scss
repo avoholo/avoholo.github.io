@@ -241,7 +241,8 @@
     padding-right: 10px;
 
     @include media-query($on-mobile) {
-      font-size: 16px;
+      //font-size: 16px;
+      font-size: 14px;
     }
   }
 
@@ -252,6 +253,10 @@
     font-size: $base-font-size;
     font-weight: normal;
     letter-spacing: 0.1px;
+
+    @include media-query($on-mobile) {
+      font-size: $mobile-base-font-size;
+    }
 
     a {
       color: $text-base-color;
@@ -278,6 +283,10 @@
     opacity: 0.8;
     font-weight: $bold-weight;
     font-size: $small-font-size;
+
+    @include media-query($on-mobile) {
+      font-size: $mobile-small-font-size - 5;
+    }
   }
   a.footer_item {
     color: $black;
@@ -298,6 +307,10 @@
     display: block;
     color: $gray;
     opacity: 0.8;
+
+    @include media-query($on-mobile) {
+      font-size: $mobile-small-font-size;
+    }
   }
 }
 

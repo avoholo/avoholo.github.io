@@ -36,7 +36,7 @@
     }
 
     @include media-query($on-mobile) {
-      font-size: 1.9em;
+      font-size: 1.55em;
     }
   }
 }
@@ -98,6 +98,11 @@
       position: relative;
       bottom: 5px;
       vertical-align: baseline;
+
+      @include media-query($on-mobile) {
+        font-size: $mobile-small-font-size;
+      }
+
     }
 
     &:hover {
@@ -167,28 +172,34 @@
 
   h1 {
     @include relative-font-size(1.5);
+    @include mobile-relative-font-size(1.5);
   }
 
   h2 {
     @include relative-font-size(1.375);
+    @include mobile-relative-font-size(1.375);
   }
 
   h3 {
     @include relative-font-size(1.25);
+    @include mobile-relative-font-size(1.25);
     border-bottom: 1px solid $light;
     padding-bottom: 4px;
   }
 
   h4 {
     @include relative-font-size(1.25);
+    @include mobile-relative-font-size(1.25);
   }
 
   h5 {
     @include relative-font-size(1);
+    @include mobile-relative-font-size(1);
   }
 
   h6 {
     @include relative-font-size(0.875);
+    @include mobile-relative-font-size(0.875);
   }
 }
 
