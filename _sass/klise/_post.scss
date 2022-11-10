@@ -19,6 +19,10 @@
       font-weight: $bold-weight;
       font-size: $small-font-size - 1;
 
+      @include media-query($on-mobile) {
+        font-size: $mobile-small-font-size - 0.5;
+      }
+
       &:hover {
         text-decoration: none;
       }
@@ -36,7 +40,7 @@
     }
 
     @include media-query($on-mobile) {
-      font-size: 1.55em;
+      font-size: 1.6em;
     }
   }
 }
@@ -137,10 +141,37 @@
     font-weight: $bold-weight;
   }
 
+  h4 {
+    color: $black;
+    font-weight: $bold-weight;
+    //margin-top: $spacing-full;
+    margin-bottom: 0;
+
+    &:hover {
+      .anchor-head {
+        color: $text-link-blue;
+        opacity: 1;
+      }
+    }
+
+    .anchor-head {
+      position: relative;
+      opacity: 0;
+      outline: none;
+
+      &::before {
+        content: "#";
+        position: absolute;
+        right: -3px;
+        width: 1em;
+        font-weight: $bold-weight;
+      }
+    }
+  }
+
   h1,
   h2,
   h3,
-  h4,
   h5,
   h6 {
     color: $black;
@@ -189,7 +220,7 @@
   h3 {
     @include relative-font-size(1.9);
     @include media-query($on-mobile) {
-      font-size: $mobile-base-font-size * 1.25;
+      font-size: $mobile-base-font-size * 1.4;
     }
     //border-bottom: 1px solid $light;
     //padding-bottom: 4px;
