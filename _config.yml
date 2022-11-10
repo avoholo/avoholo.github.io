@@ -12,7 +12,7 @@ mode: dark # default theme "dark" | "light"
 # Profile settings
 author:
   name: Avo Tech Blog
-  bio: <hr style="height:3px; visibility:hidden;" />
+  bio: <hr style="height:5px; visibility:hidden;" />
     <p style="font-family:Georgia">“<i>The biggest issue on software teams is making sure</p>
     <p style="font-family:Georgia">everyone understands what everyone else is doing.</i>”</p>
     <hr style="height:2px; visibility:hidden;" />

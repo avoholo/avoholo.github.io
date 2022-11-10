@@ -17,7 +17,7 @@
 
     .tag {
       font-weight: $bold-weight;
-      font-size: $small-font-size - 2;
+      font-size: $small-font-size - 1;
 
       &:hover {
         text-decoration: none;
@@ -187,12 +187,12 @@
   }
 
   h3 {
-    @include relative-font-size(1.75);
+    @include relative-font-size(1.9);
     @include media-query($on-mobile) {
       font-size: $mobile-base-font-size * 1.25;
     }
-    border-bottom: 1px solid $light;
-    padding-bottom: 4px;
+    //border-bottom: 1px solid $light;
+    //padding-bottom: 4px;
   }
 
   h4 {
@@ -284,4 +284,5 @@
 
 .post-updated-at {
   font-family: "Ubuntu mono", "monospace";
+  font-weight: bold;
 }
