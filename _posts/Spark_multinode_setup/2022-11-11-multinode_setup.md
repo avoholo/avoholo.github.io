@@ -244,9 +244,9 @@ cp spark-defaults.conf.template spark-defaults.conf
 
 # Log Directory 생성
 mkdir -p $SPARK_HOME/history
-echo "spark.history.fs.logDirectory file://$SPARK_HOME/history" >> spark-defaults.conf
-echo "spark.eventLog.enabled true" >> spark-defaults.conf
-echo "spark.eventLog.dir file://$SPARK_HOME/history" >> spark-defaults.conf
+echo "spark.history.fs.logDirectory file://$SPARK_HOME/history
+spark.eventLog.enabled true
+spark.eventLog.dir file://$SPARK_HOME/history" >> spark-defaults.conf
 ~~~
 
 <br>
@@ -312,20 +312,427 @@ spark-sql> exit;
 
 <br>
 
-이렇게 Spark Application을 실행하게 되면, History Server(18080), WebUI(4040) 에서 Stage 별 상태를 확인 할 수 있다.
+이렇게 Spark Application을 실행하게 되면:
+
+- History Server(18080) 
+- WebUI(4040) 에서 Stage 별 상태를 확인 할 수 있다.
 
 <figure>
-<img src="https://raw.githubusercontent.com/avoholo/avoholo.github.io/master/_posts/Spark_multinode_setup/dag_visualization.png" alt="dag_visualization">
-<figcaption>Fig 2. Dag Visualization of Spark Application.</figcaption>
+<img src="https://raw.githubusercontent.com/avoholo/avoholo.github.io/master/_posts/Spark_multinode_setup/event_timeline.png" alt="event_timeline">
+<figcaption>Fig 2. Event Timeline of Spark Application.</figcaption>
 </figure>
 
 <br>
 
 <figure>
-<img src="https://raw.githubusercontent.com/avoholo/avoholo.github.io/master/_posts/Spark_multinode_setup/event_timeline.png" alt="event_timeline">
-<figcaption>Fig 3. Event Timeline of Spark Application.</figcaption>
+<img src="https://raw.githubusercontent.com/avoholo/avoholo.github.io/master/_posts/Spark_multinode_setup/dag_visualization.png" alt="dag_visualization">
+<figcaption>Fig 3. Dag Visualization of Spark Application.</figcaption>
+</figure>
+<br>
+
+<br>
+
+### 4. Hadoop Cluster 구성
+<hr style="height:10px; visibility:hidden;" />
+
+Hadoop Cluster를 구성하는 일은 언제나 귀찮다. 
+
+해당 설정들이 무엇을 의미하는지 안다면 그냥 복사 + 붙혀넣기 하자.
+
+<hr style="height:10px; visibility:hidden;" />
+#### Hadoop Binary 설치
+~~~bash
+cd $SPARK_BASE
+wget https://archive.apache.org/dist/hadoop/common/hadoop-3.3.3/hadoop-3.3.3.tar.gz && tar -zxvf hadoop-3.3.3.tar.gz
+mv hadoop-3.3.3 hadoop3 && rm -rf hadoop-3.3.3.tar.gz
+~~~
+
+<br>
+
+#### 환경 변수 설정
+
+~~~bash
+$ vi ~/.bashrc
+
+# Hadoop
+HADOOP_BASE=$SPARK_BASE
+HADOOP_HOME=$HADOOP_BASE/hadoop3
+HADOOP_CONF=$HADOOP_HOME/etc/hadoop
+export PATH=$PATH:$HADOOP_HOME/sbin:$HADOOP_HOME/bin
+
+. ~/.bashrc
+~~~
+
+<br>
+
+#### hadoop-env.sh
+
+~~~bash
+echo "export JAVA_HOME=$HADOOP_BASE/jdk8" >> $HADOOP_CONF/hadoop-env.sh
+~~~
+
+<br>
+
+#### core-site.xml
+
+~~~bash
+echo "<configuration>
+    <property>
+        <name>fs.defaultFS</name>
+        <value>hdfs://spark-master01:9000/</value>
+    </property>
+</configuration>" > $HADOOP_CONF/core-site.xml
+~~~
+
+<br>
+
+#### hdfs-site.xml
+
+아래 예시 처럼 `$HADOOP_HOME` 으로 변수 처리 할 경우 `~/.bashrc` 에 실제 변수가 존재하는지 체크를 한번 더 하자. 안그럼 값이 빈칸으로 들어간다.
+
+~~~bash
+echo "<configuration>
+    <property>
+        <name>dfs.namenode.name.dir</name>
+        <value>file://$HADOOP_HOME/dfs/name</value>
+    </property>
+    <property>
+        <name>dfs.datanode.data.dir</name>
+        <value>file://$HADOOP_HOME/dfs/data</value>
+    </property>
+    <property>
+        <name>dfs.namenode.checkpoint.dir</name>
+        <value>file://$HADOOP_HOME/dfs/namesecondary</value>
+    </property>
+</configuration>" > $HADOOP_CONF/hdfs-site.xml
+~~~
+
+<br>
+
+#### yarn-site.xml
+
+~~~bash
+echo "<configuration>
+    <property>
+        <name>yarn.resourcemanager.hostname</name>
+        <value>spark-master01</value>
+    </property>
+    <property>
+        <name>yarn.resourcemanager.webapp.address</name>
+        <value>spark-master01:8188</value>
+    </property>
+</configuration>" > $HADOOP_CONF/yarn-site.xml
+~~~
+
+<br>
+
+#### hadoop workers
+
+~~~bash
+echo "spark-worker01
+spark-worker02
+spark-worker03" > $HADOOP_CONF/workers
+~~~
+
+<br>
+
+#### HDFS Init & Start
+
+`spark-worker01: datanode is running as process 8693.`
+
+`Stop it first and ensure /tmp/hadoop-spark-datanode.pid file is empty before retry.`
+
+이런 워닝이 뜨고 있다면 이미 Datanode가 실행 중인거다. `start-dfs.sh` 을 실행한 후, 실패 했다면 **반드시** `stop-dfs.sh` 실행 하고, pid 파일 지우고 다시 실행하자.
+
+~~~bash
+ssh spark-master01
+
+# Init (초기에만 실행 필요)
+$HADOOP_HOME/bin/hdfs namenode -format
+
+# Start (at spark-master01)
+$HADOOP_HOME/sbin/stop-dfs.sh
+ssh spark-worker01 rm -rf /tmp/hadoop-spark-datanode.pid
+ssh spark-worker02 rm -rf /tmp/hadoop-spark-datanode.pid
+ssh spark-worker03 rm -rf /tmp/hadoop-spark-datanode.pid
+
+$HADOOP_HOME/sbin/start-dfs.sh
+>> Starting namenodes on [spark-master01]
+>> Starting datanodes
+>> Starting secondary namenodes [spark-master01]
+
+[spark@spark-master01 hadoop]$ jps
+1607 HistoryServer
+3592 NameNode
+3821 SecondaryNameNode
+~~~
+
+<br>
+
+#### Yarn Start
+
+~~~bash
+$HADOOP_HOME/sbin/start-yarn.sh
+>> Starting resourcemanager
+>> Starting nodemanagers
+
+[spark@spark-master01 sbin]$ jps
+5701 SecondaryNameNode
+1607 HistoryServer
+5469 NameNode
+6063 ResourceManager
+~~~
+
+
+
+
+
+#### WebUI
+
+WebUI로 들어가서 Overview 탭 > Summary > Live Nodes 개수 확인한다. Live Node가 3개가 아니면:
+
+`tail -f  $HADOOP_HOME/logs/hadoop-spark-datanode-spark-worker-02.log` 로 로그확인.
+
+- **Hadoop WebUI** : http://spark-master01:9870
+- **Yarn WebUI** : http://spark-master01:8188
+- **Spark WebUI** : http://spark-master01:4040
+- **Spark History** : http://spark-master01:18080
+
+<br>
+
+필자의 경우엔 `spark-worker02` 서버의 ip가 잘못 잡혀있어 namenode와 통신을 못했었다.
+
+~~~bash
+service to spark-master01/1********:9000 Datanode denied communication with namenode because hostname cannot be resolved (ip=192.****.11, hostname=?): 
+DatanodeRegistration(0.0.0.0:9866, datanodeUuid=3e3bebbe-12cb-4bf7-a704-a6aa35c11cea, infoPort=9864, infoSecurePort=0, ipcPort=9867, storageInfo=lv=-57;cid=CID-
+~~~
+
+spark 서버 IP로 설정 후 기동시키자 live-node가 3개로 정상 기동했었다.
+
+역시 항상 **로그를 먼저 봐야** 문제가 쉽게 해결된다. 문제가 뭔지도 모르는데 대충 예상해서 트러블 슈팅하는 습관은 좋지 못한거같다.
+
+<br>
+
+<br>
+
+### 5. Spark-Yarn 연동
+
+Spark의 `Resource Manager`를 `Yarn`으로 설정 하려면 `HADOOP_CONF` , `YARN_CONF` 설정을 추가로 해줘야한다.
+
+<hr style="height:10px; visibility:hidden;" />
+#### spark-shell with yarn
+
+`$HADOOP_CONF/core-site.xml` , `$HADOOP_CONF/yarn-site.xml`  을 `SPARK_CONF2`에 복사해주자.
+
+~~~bash
+mkdir -p $SPARK_HOME/conf2
+$ vi ~/.bashrc
+SPARK_CONF2=$SPARK_HOME/conf2
+. ~/.bashrc
+
+cp $HADOOP_CONF/core-site.xml $SPARK_CONF2
+cp $HADOOP_CONF/yarn-site.xml $SPARK_CONF2
+~~~
+
+<br>
+
+#### spark-shell with yarn 실행
+
+~~~bash
+cd $SPARK_HOME
+YARN_CONF_DIR=$SPARK_CONF2 ./bin/spark-shell --master yarn
+
+Using Spark's default log4j profile: org/apache/spark/log4j-defaults.properties
+Setting default log level to "WARN".
+To adjust logging level use sc.setLogLevel(newLevel). For SparkR, use setLogLevel(newLevel).
+22/11/11 17:55:36 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+22/11/11 17:55:38 WARN Client: Neither spark.yarn.jars nor spark.yarn.archive is set, falling back to uploading libraries under SPARK_HOME.
+Spark context Web UI available at http://spark-master01:4040
+Spark context available as 'sc' (master = yarn, app id = application_1668156169104_0001).
+Spark session available as 'spark'.
+Welcome to
+      ____              __
+     / __/__  ___ _____/ /__
+    _\ \/ _ \/ _ `/ __/  '_/
+   /___/ .__/\_,_/_/ /_/\_\   version 3.2.1
+      /_/
+         
+Using Scala version 2.12.15 (OpenJDK 64-Bit Server VM, Java 1.8.0_232)
+Type in expressions to have them evaluated.
+Type :help for more information
+
+scala> sc
+scala> spark
+scala> sc.master
+res2: String = yarn
+scala> sc.uiWebUrl
+res3: Option[String] = Some(http://spark-master-01:4040)
+~~~
+
+<br>
+
+#### Executor 코어수 증설을 위한 설정
+
+~~~bash
+stop-yarn.sh
+cd $HADOOP_CONF
+$ vi capacity-scheduler.xml
+
+# 추가
+....
+  <property>
+    <name>yarn.scheduler.capacity.resource-calculator</name>
+    <!--<value>org.apache.hadoop.yarn.util.resource.DefaultResourceCalculator</value>-->
+    <value>org.apache.hadoop.yarn.util.resource.DominantResourceCalculator</value>
+    <description>
+	  The ResourceCalculator implementation to be used to compare
+	  Resources in the scheduler.
+	  The default i.e. DefaultResourceCalculator only uses Memory while
+	  DominantResourceCalculator uses dominant-resource to compare
+	  multi-dimensional resources such as Memory, CPU etc.
+    </description>
+  </property>
+....
+
+scp $HADOOP_CONF/capacity-scheduler.xml spark@spark-worker01:$HADOOP_CONF
+scp $HADOOP_CONF/capacity-scheduler.xml spark@spark-worker02:$HADOOP_CONF
+scp $HADOOP_CONF/capacity-scheduler.xml spark@spark-worker03:$HADOOP_CONF
+~~~
+
+<br>
+
+#### Executor 메모리와 코어수 증설
+
+~~~bash
+cd $SPARK_HOME
+YARN_CONF_DIR=$SPARK_CONF2 ./bin/spark-shell --master yarn --executor-memory 4G --executor-cores 4 --num-executors 3
+~~~
+
+부여한 설정대로 적용되었는지 아래 WebUI에서 확인:
+
+- **Yarn WebUI** : http://spark-master01:8188
+- **Spark WebUI** : http://spark-master01:4040
+
+
+
+<figure>
+<img src="https://raw.githubusercontent.com/avoholo/avoholo.github.io/master/_posts/Spark_multinode_setup/1.png" alt="1">
+<figcaption>Fig 4. .</figcaption>
+</figure>
+<br>
+<figure>
+<img src="https://raw.githubusercontent.com/avoholo/avoholo.github.io/master/_posts/Spark_multinode_setup/2.png" alt="2">
+<figcaption>Fig 5. .</figcaption>
+</figure>
+<br>
+<figure>
+<img src="https://raw.githubusercontent.com/avoholo/avoholo.github.io/master/_posts/Spark_multinode_setup/3.png" alt="3">
+<figcaption>Fig 6. .</figcaption>
+</figure>
+<br>
+<figure>
+<img src="https://raw.githubusercontent.com/avoholo/avoholo.github.io/master/_posts/Spark_multinode_setup/4.png" alt="4">
+<figcaption>Fig 7. .</figcaption>
+</figure>
+<br>
+<figure>
+<img src="https://raw.githubusercontent.com/avoholo/avoholo.github.io/master/_posts/Spark_multinode_setup/5.png" alt="5">
+<figcaption>Fig 8. .</figcaption>
 </figure>
 
+
+<br>
+<br>
+
+### 6. Spark Standalone vs Spark Cluster 
+
+이제부터 중요해진다. (Chapter2-28을 다시 봐야할거같다...) 
+
+#### Spark Cluster로 word count 수행 (Standalone X)
+
+##### Error 1
+
+~~~bash
+scala > val rdd_wc = sc.textFile("README.md").flatMap(_.split(" ")).map((_,1)).reduceByKey(_+_)
+~~~
+
+`org.apache.hadoop.mapred.InvalidInputException: `
+
+`Input path does not exist: hdfs://spark-master01:9000/user/spark/README.md`
+
+<br>
+
+##### Error 2
+
+~~~bash
+scala > val rdd_wc = sc.textFile("file:///spark/spark3/README.md").flatMap(_.split(" ")).map((_,1)).reduceByKey(_+_)
+scala > rdd_wc.collect.take(10).foreach(println)
+~~~
+
+`WARN TaskSetManager: Lost task 0.0 in stage 0.0 (TID 0) (spark-worker-01 executor 1): `
+
+`java.io.FileNotFoundException: File file:/spark/spark3/README.md does not exist`
+
+<br>
+
+
+
+##### Success
+
+**driver 노드와 executor 노드 모두에 있는** Hadoop의 README.txt 파일로 수행.
+
+~~~bash
+scala > val rdd_wc = sc.textFile("file:///spark/hadoop3/README.txt").flatMap(_.split(" ")).map((_,1)).reduceByKey(_+_)
+scala > rdd_wc.collect.foreach(println)
+
+(information,1)
+(http://hadoop.apache.org/,1)
+(our,2)
+(,9)
+(wiki,,1)
+(please,1)
+(For,1)
+(visit,1)
+(about,1)
+(website,1)
+(Hadoop,,1)
+(https://cwiki.apache.org/confluence/display/HADOOP/,1)
+(at:,2)
+(and,1)
+(latest,1)
+(the,1)
+~~~
+
+<br>
+
+<br>
+
+### 7. Summary
+
+#### Commands
+
+~~~bash
+ls -al /tmp | grep pid
+ssh spark-worker01 ls -al /tmp | grep pid
+ssh spark-worker02 ls -al /tmp | grep pid
+ssh spark-worker03 ls -al /tmp | grep pid
+
+rm -rf /tmp/*.pid
+ssh spark-worker03 rm -rf /tmp/*.pid
+
+start-dfs.sh
+start-yarn.sh
+cd $SPARK_HOME
+YARN_CONF_DIR=$SPARK_CONF2 ./bin/spark-shell --master yarn --executor-memory 4G --executor-cores 4 --num-executors 3
+scala> sc
+scala> spark
+scala> sc.master
+scala> sc.uiWebUrl
+~~~
+
+
+
+<br>
 
 > Related :
 > <a href="/concept-notes">Post 1, </a> 
