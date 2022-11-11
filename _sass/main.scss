@@ -22,7 +22,8 @@ $bold-weight: 600;
 
 //Light Colors
 $text-base-color: #434648;
-$text-link-blue: #003fff;
+//$text-link-blue: #003fff; --> Post Tag Color when light-theme
+$text-link-blue: #0094FF;
 $text-link-blue-active: #0036c7;
 
 $black: #0d122b;
@@ -34,6 +35,7 @@ $white: #fff;
 
 // Dark Colors
 $dark-text-base-color: #c7bebe;
+//$dark-text-link-blue: #0094FF; Post Tag Color when dark-theme
 $dark-text-link-blue: #ff5277;
 $dark-text-link-blue-active: #ff2957;
 //#0B281D

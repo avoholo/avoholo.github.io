@@ -17,10 +17,13 @@
 
     .tag {
       font-weight: $bold-weight;
-      font-size: $small-font-size - 1;
+      font-size: $small-font-size;
+      // 없었는데 빨강에서 파랑으로 추가.
+      color: #0094FF;
 
       @include media-query($on-mobile) {
         font-size: $mobile-small-font-size - 0.5;
+        color: #0094FF;
       }
 
       &:hover {
@@ -209,7 +212,7 @@
   }
 
   h2 {
-    font-size: $base-font-size * 1.75;
+    font-size: $base-font-size * 1.65;
     font-style: italic;
     font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
     @include media-query($on-mobile) {
