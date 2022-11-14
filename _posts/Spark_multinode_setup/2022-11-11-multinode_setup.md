@@ -619,6 +619,7 @@ cd $SPARK_HOME && YARN_CONF_DIR=$SPARK_CONF2 ./bin/spark-shell --master yarn --e
 
 ~~~bash
 JAVA_HOME=/spark/jdk8
+SPARK_MASTER_HOST=spark-master01
 SPARK_MASTER_PORT=7177  # default: 7077
 SPARK_MASTER_WEBUI_PORT=8180  # default: 8080
 SPARK_WORKER_PORT=7178  # default: random
@@ -774,12 +775,20 @@ ssh spark-worker03 rm -rf /tmp/*.pid
 
 start-dfs.sh
 start-yarn.sh
-$SPARK_HOME/sbin/start-history-server.sh
+start-master.sh
+
+ssh spark@spark-worker01 sh $SPARK_HOME/sbin/start-worker.sh $SPARK_MASTER_HOST:$SPARK_MASTER_PORT
+ssh spark@spark-worker02 sh $SPARK_HOME/sbin/start-worker.sh $SPARK_MASTER_HOST:$SPARK_MASTER_PORT
+ssh spark@spark-worker03 sh $SPARK_HOME/sbin/start-worker.sh $SPARK_MASTER_HOST:$SPARK_MASTER_PORT
+
 cd $SPARK_HOME && YARN_CONF_DIR=$SPARK_CONF2 ./bin/spark-shell --master yarn --driver-memory 30g --executor-memory 24G --executor-cores 6 --num-executors 3
 scala> sc
 scala> spark
 scala> sc.master
 scala> sc.uiWebUrl
+
+
+netstat -antup | grep LISTEN | sort -n
 ~~~
 
 <br>
