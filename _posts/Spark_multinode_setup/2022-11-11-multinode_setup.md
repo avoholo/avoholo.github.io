@@ -1,7 +1,7 @@
 ---
 title: "Spark Cluster Setup"
 date: 2022-11-11 09:00:00 +07:00
-modified: 2022-11-11 09:00:00 +07:00
+modified: 2022-11-14 09:00:00 +07:00
 tags: [Spark]
 description: Introduction to Spark Cluster Setup.
 image: "/_posts/multinode_setup/default_post_image.png"
@@ -153,7 +153,8 @@ mv spark-3.2.1-bin-hadoop3.2 spark3 && rm -rf spark-3.2.1-bin-hadoop3.2.tgz
 ~~~bash
 cd /spark/spark3/conf
 cp spark-env.sh.template spark-env.sh
-echo "JAVA_HOME=/spark/jdk8" >> spark-env.sh
+echo "JAVA_HOME=/spark/jdk8
+alias sparkenv='vi $SPARK_CONF/spark-env.sh'" >> spark-env.sh
 echo "export PATH=/spark/jdk8/bin:$PATH" >> ~/.bashrc
 . ~/.bashrc
 
@@ -238,6 +239,8 @@ Spark은 기본적으로 로그를 적재하지 않으므로 별도의 설정이
 
 #### Spark-defaults.conf 설정
 
+`spark.driver.memory 24g` 드라이버 메모리 설정도 history 서버 구성 하는김에 하자. 
+
 ~~~bash
 cd $SPARK_CONF
 cp spark-defaults.conf.template spark-defaults.conf
@@ -246,7 +249,8 @@ cp spark-defaults.conf.template spark-defaults.conf
 mkdir -p $SPARK_HOME/history
 echo "spark.history.fs.logDirectory file://$SPARK_HOME/history
 spark.eventLog.enabled true
-spark.eventLog.dir file://$SPARK_HOME/history" >> spark-defaults.conf
+spark.eventLog.dir file://$SPARK_HOME/history
+spark.driver.memory 24g" >> spark-defaults.conf
 ~~~
 
 <br>
@@ -438,9 +442,10 @@ spark-worker03" > $HADOOP_CONF/workers
 
 #### HDFS Init & Start
 
-`spark-worker01: datanode is running as process 8693.`
-
-`Stop it first and ensure /tmp/hadoop-spark-datanode.pid file is empty before retry.`
+~~~bash
+spark-worker01: datanode is running as process 8693.
+Stop it first and ensure /tmp/hadoop-spark-datanode.pid file is empty before retry.
+~~~
 
 이런 워닝이 뜨고 있다면 이미 Datanode가 실행 중인거다. `start-dfs.sh` 을 실행한 후, 실패 했다면 **반드시** `stop-dfs.sh` 실행 하고, pid 파일 지우고 다시 실행하자.
 
@@ -483,9 +488,7 @@ $HADOOP_HOME/sbin/start-yarn.sh
 6063 ResourceManager
 ~~~
 
-
-
-
+<br>
 
 #### WebUI
 
@@ -500,7 +503,7 @@ WebUI로 들어가서 Overview 탭 > Summary > Live Nodes 개수 확인한다. L
 
 <br>
 
-필자의 경우엔 `spark-worker02` 서버의 ip가 잘못 잡혀있어 namenode와 통신을 못했었다.
+나같은 경우엔 `spark-worker02` 서버의 ip가 잘못 잡혀있어 namenode와 통신을 못했었다.
 
 ~~~bash
 service to spark-master01/1********:9000 Datanode denied communication with namenode because hostname cannot be resolved (ip=192.****.11, hostname=?): 
@@ -604,8 +607,7 @@ scp $HADOOP_CONF/capacity-scheduler.xml spark@spark-worker03:$HADOOP_CONF
 #### Executor 메모리와 코어수 증설
 
 ~~~bash
-cd $SPARK_HOME
-YARN_CONF_DIR=$SPARK_CONF2 ./bin/spark-shell --master yarn --executor-memory 4G --executor-cores 4 --num-executors 3
+cd $SPARK_HOME && YARN_CONF_DIR=$SPARK_CONF2 ./bin/spark-shell --master yarn --executor-memory 20G --executor-cores 7 --num-executors 3cd
 ~~~
 
 부여한 설정대로 적용되었는지 아래 WebUI에서 확인:
@@ -613,65 +615,115 @@ YARN_CONF_DIR=$SPARK_CONF2 ./bin/spark-shell --master yarn --executor-memory 4G 
 - **Yarn WebUI** : http://spark-master01:8188
 - **Spark WebUI** : http://spark-master01:4040
 
+혹은 `Standalone-Mode`라면, `spark-env.sh`에 환경변수를 포함하여 Spark Standalone Cluster 기동시 적용 할 수 있다<sup id="standalone">[[1]](#standalone-ref)</sup>.  
 
+~~~bash
+JAVA_HOME=/spark/jdk8
+SPARK_MASTER_PORT=7177  # default: 7077
+SPARK_MASTER_WEBUI_PORT=8180  # default: 8080
+SPARK_WORKER_PORT=7178  # default: random
+SPARK_WORKER_WEBUI_PORT=8181  # default: 8081
+#SPARK_WORKER_CORES=8  # default: all available
+#SPARK_WORKER_MEMORY=8G  # default: machine's total RAM minus 1 GiB
+SPARK_PUBLIC_DNS=${HOSTNAME}
+
+[spark@spark-master01 ~]$ source $SPARK_CONF/spark-env.sh
+~~~
+
+
+
+RM이 `Yarn` 으로 설정되어 있다면<sup id="yarn">[[2]](#yarn-ref)</sup>, **각 노드별** `yarn-site.xml` 에:
+
+- `yarn.nodemanager.resource.memory-mb`
+- `yarn.nodemanager.resource.cpu-vcores`
+- `yarn.scheduler.maximum-allocation-mb`
+-  `yarn.scheduler.maximum-allocation-vcores`
+
+그리고 `mapred-site.xml` 에 :
+
+- `mapreduce.map.memory.mb`
+- `mapreduce.map.cpu.vcores`
+- `mapreduce.map.java.opts`
+- `mapreduce.reduce.memory.mb`
+- `mapreduce.reduce.cpu.vcores`
+- `mapreduce.reduce.java.opts`
+- `yarn.app.mapreduce.am.resource.mb`
+
+설정으로 메모리와 vCores 수를 늘릴 수 있다. 클러스터 리소스 튜닝은 **다른 포스트에서 다룰 예정**이다.
+
+<br>
 
 <figure>
 <img src="https://raw.githubusercontent.com/avoholo/avoholo.github.io/master/_posts/Spark_multinode_setup/1.png" alt="1">
-<figcaption>Fig 4. .</figcaption>
+<figcaption>Fig 4. Executor별 할당된 리소스 내역</figcaption>
 </figure>
+
 <br>
+
 <figure>
 <img src="https://raw.githubusercontent.com/avoholo/avoholo.github.io/master/_posts/Spark_multinode_setup/2.png" alt="2">
-<figcaption>Fig 5. .</figcaption>
+<figcaption>Fig 5. Applciation에 할당된 리소스 내역</figcaption>
 </figure>
+
 <br>
 <figure>
 <img src="https://raw.githubusercontent.com/avoholo/avoholo.github.io/master/_posts/Spark_multinode_setup/3.png" alt="3">
-<figcaption>Fig 6. .</figcaption>
+<figcaption>Fig 6. Application Summary 페이지</figcaption>
 </figure>
+
 <br>
 <figure>
 <img src="https://raw.githubusercontent.com/avoholo/avoholo.github.io/master/_posts/Spark_multinode_setup/4.png" alt="4">
-<figcaption>Fig 7. .</figcaption>
+<figcaption>Fig 7. Container별 리소스 할당 내역</figcaption>
 </figure>
+
 <br>
 <figure>
 <img src="https://raw.githubusercontent.com/avoholo/avoholo.github.io/master/_posts/Spark_multinode_setup/5.png" alt="5">
-<figcaption>Fig 8. .</figcaption>
+<figcaption>Fig 8. 하나의 Container에 할당된 리소스 Summary</figcaption>
 </figure>
 
 
+
 <br>
 <br>
 
-### 6. Spark Standalone vs Spark Cluster 
+### 6. Spark Standalone vs Spark Cluster (Yarn)
 
 이제부터 중요해진다. (Chapter2-28을 다시 봐야할거같다...) 
 
-#### Spark Cluster로 word count 수행 (Standalone X)
+<br>
 
-##### Error 1
+#### Spark Cluster로 word count 수행
+
+##### Error 1 
 
 ~~~bash
 scala > val rdd_wc = sc.textFile("README.md").flatMap(_.split(" ")).map((_,1)).reduceByKey(_+_)
 ~~~
 
-`org.apache.hadoop.mapred.InvalidInputException: `
+위와 같이 `READMD.md` 파일을 읽으려고 하면 아래와 같은 에러가 발생한다.
 
-`Input path does not exist: hdfs://spark-master01:9000/user/spark/README.md`
+~~~bash
+org.apache.hadoop.mapred.InvalidInputException: 
+Input path does not exist: hdfs://spark-master01:9000/user/spark/README.md
+~~~
 
 <br>
 
-##### Error 2
+##### Error 2 (local file)
 
 ~~~bash
 scala > val rdd_wc = sc.textFile("file:///spark/spark3/README.md").flatMap(_.split(" ")).map((_,1)).reduceByKey(_+_)
 scala > rdd_wc.collect.take(10).foreach(println)
 ~~~
+위와 같이 `READMD.md` 파일을 읽으려고 하면 아래와 같은 에러가 발생한다.
+~~~bash
+WARN TaskSetManager: Lost task 0.0 in stage 0.0 (TID 0) (spark-worker-01 executor 1): 
+java.io.FileNotFoundException: File file:/spark/spark3/README.md does not exist
+~~~
 
-`WARN TaskSetManager: Lost task 0.0 in stage 0.0 (TID 0) (spark-worker-01 executor 1): `
 
-`java.io.FileNotFoundException: File file:/spark/spark3/README.md does not exist`
 
 <br>
 
@@ -722,27 +774,34 @@ ssh spark-worker03 rm -rf /tmp/*.pid
 
 start-dfs.sh
 start-yarn.sh
-cd $SPARK_HOME
-YARN_CONF_DIR=$SPARK_CONF2 ./bin/spark-shell --master yarn --executor-memory 4G --executor-cores 4 --num-executors 3
+$SPARK_HOME/sbin/start-history-server.sh
+cd $SPARK_HOME && YARN_CONF_DIR=$SPARK_CONF2 ./bin/spark-shell --master yarn --driver-memory 30g --executor-memory 24G --executor-cores 6 --num-executors 3
 scala> sc
 scala> spark
 scala> sc.master
 scala> sc.uiWebUrl
 ~~~
 
+<br>
 
+#### WebUI
+
+- **Hadoop WebUI** : http://spark-master01:9870
+- **Yarn WebUI** : http://spark-master01:8188
+- **Spark WebUI** : http://spark-master01:4040
+- **Spark History** : http://spark-master01:18080
 
 <br>
 
 > Related :
-> <a href="/concept-notes">Post 1, </a> 
-> <a href="/concept-notes">Post 2</a> 
+> <a href="/concept-notes">None</a> 
 
 
 
 ###### Notes
+<small id="standalone-ref"><sup>[[1]](#standalone)</sup> Mesos와 Standalone 모드는 spark-env.sh 파일로 설정 가능하다. 자세한 내용은 <a href="https://spark.apache.org/docs/latest/configuration.html#environment-variables">여기서</a> 확인 가능하다.</small>
 
-<small id="medium-ref"><sup>[[1]](#medium)</sup> None.</small>
+<small id="yarn-ref"><sup>[[2]](#yarn)</sup> 아무 설정이 없을 경우, yarn-default.xml로 yarn이 기동된다. yarn-default.xml 기본 설정은 <a href="https://hadoop.apache.org/docs/r3.1.1/hadoop-yarn/hadoop-yarn-common/yarn-default.xml">여기서</a> 확인 가능하다.</small>
 
 ###### Resources
-1. [test](https://medium.com/about)
+1. [Spark Official API Docs](https://spark.apache.org/docs/latest/api/scala/org/apache/spark/index.html)
