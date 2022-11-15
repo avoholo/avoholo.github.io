@@ -123,8 +123,15 @@
 
   > p {
     margin: 0;
-    padding-top: $spacing-full - 15;
-    padding-bottom: $spacing-full - 15;
+    //padding-top: $spacing-full - 15;
+    //padding-bottom: $spacing-full - 15;
+    padding-top: $spacing-full - 22;
+    padding-bottom: $spacing-full - 22;
+
+    @include media-query($on-mobile) {
+      padding-top: $spacing-full - 15;
+      padding-bottom: $spacing-full - 15;
+    }
   }
 
   ul.task-list {
@@ -148,7 +155,7 @@
     color: $black;
     font-weight: $bold-weight;
     //margin-top: $spacing-full;
-    margin-bottom: 0;
+    margin-bottom: 3px;
 
     &:hover {
       .anchor-head {
@@ -180,7 +187,7 @@
     color: $black;
     font-weight: $bold-weight;
     margin-top: $spacing-full;
-    margin-bottom: 0;
+    margin-bottom: 3px;
 
     &:hover {
       .anchor-head {
