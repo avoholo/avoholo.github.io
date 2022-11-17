@@ -118,32 +118,106 @@ Hello, Scala!
 
 <br>
 
-### Function with Variable Arguments
+### Jenkins Code
 
 <hr style="height:20px; visibility:hidden;" />
 
-#### Multiple Arguments
+#### API Test Automation in Scripted
 
 ~~~scala
-object Demo {
-   def main(args: Array[String]) {
-      printStrings("Hello", "Scala", "Python");
-   }
-   
-   def printStrings( args:String* ) = {
-      var i : Int = 0;
-      
-      for( arg <- args ){
-         println("Arg value[" + i + "] = " + arg );
-         i += 1;
-      }
-   }
+import groovy.io.FileType
+
+//pipeline {
+node(){
+    /*
+    *** Please Setup targerDir.
+    */
+    def targetDir = "test"
+    
+    def baseDir = sh(script:"pwd", returnStdout: true).trim();
+    def mydir = new File("$baseDir/$targetDir")
+    
+    stage('GetFiles'){
+        file_list = traverseDir(mydir)
+        sorted = file_list.sort()
+    }
+    
+    stage('ListFiles'){
+        def count = sh(script:"ls $targetDir | wc -l", returnStdout: true);
+        println("Total Number of Files : " + count)
+        for(int i=0; i < sorted.size(); i++){
+            println("Index " + i + " : " +sorted[i].replace("$baseDir", "").replace("$targetDir", "").replaceAll("/",""))
+        }
+    }
+    
+    stage('000_get_auth'){
+        getDto(sorted[0], targetDir)
+    }
+    stage('101_encrypt'){
+        execute(sorted[1], targetDir)
+    }
+    stage('102_decrypt'){
+        execute(sorted[2], targetDir)
+    }
+    stage('202_create_user') {
+        execute(sorted[3], targetDir)
+    }
+    stage('204_get_user_info') {
+        execute(sorted[5], targetDir)
+    }
+    stage('203_delete_user') {
+        execute(sorted[4], targetDir)
+    }
+    
 }
 
-scala> Demo.printStrings("Hello", "Scala", "Python")
-Arg value[0] = Hello
-Arg value[1] = Scala
-Arg value[2] = Python
+@NonCPS    
+def traverseDir(dir){
+    def list = []
+    dir.traverse(type: groovy.io.FileType.FILES, nameFilter: ~/.*\.sh/){
+        //println it.path
+        list << it.path
+        
+    }
+    return list
+}
+
+
+def getDto(tmp, targetDir){
+    def baseDir = sh(script:"pwd", returnStdout: true).trim();
+    def mydir = new File("$baseDir/$targetDir")
+    token = sh(script: "sh $tmp | jq '.dto.token'", returnStdout: true)
+    status = sh(script: "sh $tmp | awk 'NR==1{print \$1}'", returnStdout: true)
+    println("** SUCCESS ** " + tmp.replace("$baseDir", "").replace("$targetDir", "").replaceAll("/",""))
+    println(status)
+}
+
+def execute(tmp, targetDir){
+    def baseDir = sh(script:"pwd", returnStdout: true).trim();
+    def mydir = new File("$baseDir/$targetDir")
+    try {
+        status_code = sh(script: "sh $tmp | jq '.header.responseCode' | sed 's/\"//g' | sed 's/NON-0//g'", returnStdout: true)
+        status = sh(script: "sh $tmp | jq '.dto'", returnStdout: true)
+        if(status_code.toInteger() == 200){
+            println(status_code)
+            println("** SUCCESS ** " + tmp.replace("$baseDir", "").replace("$targetDir", "").replaceAll("/",""))
+            println(status)
+        }
+    } catch (Exception e) {
+        println("** FAILED! ** " + tmp.replace("$baseDir", "").replace("$targetDir", "").replaceAll("/","") + ":" + status_code)
+        def fail = sh(script: "sh $tmp | jq '.exception'", returnStdout: true)
+        println(fail)
+        catchError(stageResult:'FAIL') {
+        }
+    }
+}
+
+/*
+@NonCPS
+def jsonParse(def json) {
+  new groovy.json.JsonSlurperClassic().parseText(json)
+}
+*/
 ~~~
 
 

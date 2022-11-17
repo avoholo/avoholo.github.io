@@ -772,6 +772,7 @@ ssh spark-worker03 ls -al /tmp | grep pid
 rm -rf /tmp/*.pid
 ssh spark-worker03 rm -rf /tmp/*.pid
 
+source $SPARK_CONF/spark-env.sh
 start-dfs.sh
 start-yarn.sh
 start-master.sh
@@ -798,6 +799,23 @@ netstat -antup | grep LISTEN | sort -n
 - **Yarn WebUI** : http://spark-master01:8188
 - **Spark WebUI** : http://spark-master01:4040
 - **Spark History** : http://spark-master01:18080
+
+<br>
+
+#### Stop
+
+~~~bash
+ssh spark@spark-worker01 sh $SPARK_HOME/sbin/stop-worker.sh 
+ssh spark@spark-worker02 sh $SPARK_HOME/sbin/stop-worker.sh 
+ssh spark@spark-worker03 sh $SPARK_HOME/sbin/stop-worker.sh 
+stop-master.sh
+stop-yarn.sh
+stop-dfs.sh
+~~~
+
+
+
+
 
 <br>
 
