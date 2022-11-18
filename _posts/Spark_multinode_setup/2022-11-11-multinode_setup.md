@@ -776,7 +776,7 @@ source $SPARK_CONF/spark-env.sh
 start-dfs.sh
 start-yarn.sh
 start-master.sh
-
+$SPARK_HOME/sbin/start-history-server.sh
 ssh spark@spark-worker01 sh $SPARK_HOME/sbin/start-worker.sh $SPARK_MASTER_HOST:$SPARK_MASTER_PORT
 ssh spark@spark-worker02 sh $SPARK_HOME/sbin/start-worker.sh $SPARK_MASTER_HOST:$SPARK_MASTER_PORT
 ssh spark@spark-worker03 sh $SPARK_HOME/sbin/start-worker.sh $SPARK_MASTER_HOST:$SPARK_MASTER_PORT
