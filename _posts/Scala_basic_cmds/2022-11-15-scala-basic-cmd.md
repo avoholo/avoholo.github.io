@@ -1,10 +1,10 @@
 ---
-title: "Scala 기초 - Functions"
+title: "Scala 기초(1) - Functions"
 date: 2022-11-15 00:00:00 +09:00
 modified: 2022-11-15 00:00:00 +09:00
 tags: [Scala]
 description: Scala Basic Commands. 
-image: "/_posts/$folder_name/default_post_image.png"
+image: "/_posts/Scala_basic_cmds/default_post_image.png"
 ---
 
 <figure>

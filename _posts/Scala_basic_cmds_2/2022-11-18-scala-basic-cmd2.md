@@ -1,0 +1,375 @@
+---
+title: "Scala 기초(2) - RDD"
+date: 2022-11-18 00:00:00 +09:00
+modified: 2022-11-18 00:00:00 +09:00
+tags: [Scala]
+description: Scala Basic Commands with RDDs. 
+image: "/_posts/Scala_basic_cmds_2/default_post_image.png"
+---
+
+<figure>
+<img src="https://raw.githubusercontent.com/avoholo/avoholo.github.io/master/_posts/Template_concept-notes-detail/default_post_image.png" alt="default_post_image">
+<figcaption>Fig 1. </figcaption>
+</figure>
+
+
+
+
+Template<sup id="medium">[[1]](#medium-ref)</sup>
+
+이번 포스트에선 Spark RDD에서 제공하는 API를 소개하려고 한다. 크게 2가지로 나뉜다:
+
+- RDD Transformations (map, flatmap, filter, cartesian...etc)
+- RDD Actions (collect, countByValue, reduce...etc)
+
+
+
+### map
+
+***tip**:  spark의 `.map()` 과 scala의 `Map()` 을 헷갈리지 말자.
+
+<hr style="height:20px; visibility:hidden;" />
+
+#### Data Sets
+
+~~~bash
+cat vertical.data
+3
+56
+7
+16
+67
+96
+34
+
+cat horizontal.data
+20 38 9 8 1 9 2
+~~~
+
+<hr style="height:20px; visibility:hidden;" />
+
+#### map() + split()
+
+`foreach` 를 통해 출력하면 `java.lang.String`(?)이 출력되고 `collect()` 를 통해 값을 볼수있다.
+
+그 이유는 구분자를 공백으로 split 한 후 `n` 변수에 값이 `RDD[Array[String]]` 으로 들어갔기 때문이다.
+
+~~~scala
+scala> val nums = sc.textFile("file:///data/data/ml-100k/horizontal.data")
+scala> val n = nums.map(_.split(" "))
+// 다음과 같다.
+scala> val n = nums.map(line => line.split(" "))
+
+scala> n.foreach(println)
+[Ljava.lang.String;@7e51b6a0
+ 
+scala> :type n
+org.apache.spark.rdd.RDD[Array[String]]
+ 
+scala> n.collect()
+scala> n.take(1)
+res77: Array[Array[String]] = Array(Array(20, 38, 9, 8, 1, 9, 2))
+~~~
+
+Array안에 Array를 출력하고 싶으면 다음과 같이 하면된다.
+
+~~~scala
+scala> (n.take(1))(0).foreach(println)
+20
+38
+9
+8
+1
+9
+2
+~~~
+
+<hr style="height:20px; visibility:hidden;" />
+
+#### map() + toInt
+
+`sc.textFile` 처럼 File로 읽어온 경우엔 String으로 값이 들어간다.
+
+처음부터 불러올 때 `Int`로 불러오면 나중에 연산이 필요할 때 쓰기 편하다.
+
+~~~scala
+val hr = sc.textFile("file:///data/data/ml-100k/price_hr.data").map(_.split(" ")).collect()(0).map(_.toInt)
+
+scala> :type hr.head
+Int
+~~~
+
+<hr style="height:20px; visibility:hidden;" />
+
+<br>
+
+
+
+#### 실습 - 컬럼 자르기
+
+##### Data Set
+
+~~~bash
+[root@linux data]# head -n 10 fakefriends.csv 
+id,name,age,friends
+0,Will,33,385
+1,Jean-Luc,26,2
+2,Hugh,55,221
+3,Deanna,40,465
+4,Quark,68,21
+5,Weyoun,59,318
+6,Gowron,37,220
+7,Will,54,307
+8,Jadzia,38,380
+
+# Result
+33,385
+26,2
+55,221
+...
+38,380
+~~~
+
+<hr style="height:20px; visibility:hidden;" />
+
+##### Try 1. Return Line
+
+~~~scala
+val lines = sc.textFile("file:///data/fakefriends.csv")
+
+// Try 1. Return line
+def parseLine(line: String) = {
+    (line)
+}
+val rdd = lines.map(parseLine)
+
+rdd.take(3)
+> res7: Array[String] = Array(id,name,age,friends, 0,Will,33,385, 1,Jean-Luc,26,2
+~~~
+
+~~~scala
+// ---------line---------- //
+1  id,name,age,friends
+2  0,Will,33,385
+3  1,Jean-Luc,26,2
+// ---------------------- //
+~~~
+
+<hr style="height:20px; visibility:hidden;" />
+
+##### Try 2. Split with ,
+
+~~~scala
+// Try 2. Split with ,
+def parseLine(line: String) = {
+    val fields = line.split(",")
+    (fields)
+}
+val rdd = lines.map(parseLine)
+
+rdd.take(3)
+> res13: Array[Array[String]] = Array(Array(id, name, age, friends), Array(0, Will, 33, 385), Array(1, Jean-Luc, 26, 2))
+~~~
+
+~~~scala
+// ----------fields---------- //
+1  Array(id,name,age,friends)
+2  Array(0,Will,33,385)
+3  Array(1,Jean-Luc,26,2)
+// -------------------------- //
+~~~
+
+<hr style="height:20px; visibility:hidden;" />
+
+##### Try 3. Remove Header
+
+~~~scala
+// Try 3. Remove Header
+def parseLine(line: String) = {
+    val fields = line.split(",")
+    (fields)
+}
+var header = lines.first()
+val data = lines.filter(row => row != header)
+val rdd = data.map(parseLine)
+
+rdd.take(3)
+> res2: Array[Array[String]] = Array(Array(0, Will, 33, 385), Array(1, Jean-Luc, 26, 2), Array(2, Hugh, 55, 221))
+~~~
+
+~~~scala
+// ----------fields---------- //
+1  Array(0,Will,33,385)
+2  Array(1,Jean-Luc,26,2)
+3  Array(2, Hugh, 55, 221)
+// ------------------------- //
+~~~
+
+<hr style="height:20px; visibility:hidden;" />
+
+##### Try 4. Test for age column
+
+~~~scala
+// Try 4. Test for age column
+def parseLine(line: String) = {
+    val fields = line.split(",")
+    val age = fields(2).toInt
+    (age)
+}
+var header = lines.first()
+val data = lines.filter(row => row != header)
+val rdd = data.map(parseLine)
+
+rdd.take(3)
+> res3: Array[Int] = Array(33, 26, 55)
+~~~
+
+~~~scala
+// ----------age---------- //
+1  33
+2  26
+3  55
+// ----------------------- //
+~~~
+
+<hr style="height:20px; visibility:hidden;" />
+
+##### Try 5. Assign each column and return
+
+~~~scala
+// Try 5. Assign each column and return
+def parseLine(line: String) = {
+    val fields = line.split(",")
+    val age = fields(2).toInt
+    val friendsNum = fields(3).toInt
+    (age,friendsNum)
+}
+var header = lines.first()
+val data = lines.filter(row => row != header)
+val rdd = data.map(parseLine)
+
+rdd.take(3)
+> res5: Array[(Int, Int)] = Array((33,385), (26,2), (55,221))
+~~~
+
+~~~scala
+// ------friendsNum------- //
+1  33, 385
+2  26, 2
+3  55, 221
+// ----------------------- //
+~~~
+
+<hr style="height:20px; visibility:hidden;" />
+
+<br>
+
+### reduceByKey
+
+***tip**: RDD Transformation에 사용되므로 type이 RDD인지 먼저 확인하고 사용하자.
+
+예시) `val a` 는 reduceByKey를 사용할 수 없다.
+
+- `val a = List("apple")`
+- `val b = sc.parallelize(a)`
+
+<hr style="height:20px; visibility:hidden;" />
+
+#### Data Sets
+
+위에서 사용했던 `friendsNum` 을 재사용 할 예정이다.
+
+~~~bash
+// ------friendsNum------- //
+1  33, 385
+2  26, 2
+3  55, 221
+4  ...
+5  ...
+n  12, 205
+// ----------------------- //
+~~~
+
+<hr style="height:20px; visibility:hidden;" />
+
+#### reduceByKey(_ + _)
+
+Data가 `(Apple, 1)` 구조라고 한다면 가장 많이 쓰는 형식이다.
+
+하지만 대부분 `_ + _` 가 어떻게 동작하는건지 설명을 하지 않는다... 나는 적어도 알고 사용하고싶다.
+
+~~~scala
+scala> val w = Array("apple", "banana", "banana", "banana", "banana", "apple","apple")
+scala> val e = w.map(x => (x,1))
+scala> val e = sc.parallelize(w).map(x => (x,1)).reduceByKey(_ + _)
+scala> val e = sc.parallelize(w).map(x => (x,1)).reduceByKey((x,y) => (x+y))
+
+scala> e.collect()
+res51: Array[(String, Int)] = Array((apple,3), (banana,4))
+~~~
+
+
+
+#### mapValues
+
+`map()` 과의 차이점은 `mapValues()`는 Key, Value 형태의 데이터에 Value 값에 `map()`을 돌리는 형식이다.
+
+~~~scala
+val a = Array("apple", "apple", "apple", "apple", "banana", "banana", "banana")
+val b = sc.parallelize(a).map(x => (x,1))
+val c = b.reduceByKey(_ + _)
+
+val tmp = Array((33,385), (26,2), (55,221), (33,385))
+val rdd = sc.parallelize(tmp).mapValues(x => (x,1)).reduceByKey((x,y) => (x._1 + y._1, x._2 + y._2))
+~~~
+
+
+
+
+
+
+
+### flatmap
+
+
+
+### Best Practice (Do & Don't)
+
+##### &#9940;Don't - 
+
+##### &#9940;Don't - 
+
+##### &#9989;Do - 
+
+##### &#9989;Do -
+
+
+
+### Limitation&#10060;
+
+#### 1. 
+
+
+
+**Solution &#10004;** 
+
+- **Merge the small files** - 
+- **HAR** - 
+- **Sequence files** -
+
+#### 2. 
+
+
+
+> Related :
+> <a href="/concept-notes">Post 1, </a> 
+> <a href="/concept-notes">Post 2</a> 
+
+
+
+
+###### Notes
+<small id="medium-ref"><sup>[[1]](#medium)</sup> </small>
+
+###### Resources
+1. [HDFS Architecture](https://hadoop.apache.org/docs/current/hadoop-project-dist/hadoop-hdfs/HdfsDesign.html)
