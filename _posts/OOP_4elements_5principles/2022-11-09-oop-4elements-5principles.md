@@ -2,7 +2,7 @@
 title: "객체지향 프로그래밍의 4요소 5원칙"
 date: 2022-11-09 10:00:00 +09:00
 modified: 2022-11-09 10:00:00 +09:00
-tags: [Object-Oriented Programming]
+tags: [OOP]
 description:
 image: "/_posts/OOP_4elements_5principles/default_post_image.png"
 ---

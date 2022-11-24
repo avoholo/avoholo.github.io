@@ -1,5 +1,5 @@
 ---
-title: "[Template] Concept Notes - First Note (3)"
+title: "Concept Notes - First Note (3)"
 date: 2022-11-06 19:58:47 +07:00
 modified: 2022-11-06 23:49:47 +07:00
 tags: [Template]

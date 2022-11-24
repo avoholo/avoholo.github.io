@@ -1,5 +1,5 @@
 ---
-title: "[Template] Post Naming Rules"
+title: "Post Naming Rules"
 date: 2022-11-09 09:00:00 +09:00
 modified: 2022-11-09 09:01:00 +09:00
 tags: [Template]
