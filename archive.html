@@ -34,7 +34,9 @@ comments: false
     </h3>
   </div>
   <div style="position: relative; width: 30%; text-align: right; font-family: Verdana, Geneva, Tahoma, sans-serif;">
-    <a href="{{ post.tags }}">{{ post.tags }}</a>
+    <!--<a href="{{ post.tags }}">{{ post.tags }}</a>-->
+    <!--<a href="/category/#{{post.tags}}" style="color: #0094FF;">{{ post.tags }}</a>-->
+    <a href="/category/#{{post.tags}}">{{ post.tags }}</a>
   </div>
 </article>
 {%- endfor -%}

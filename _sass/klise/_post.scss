@@ -22,7 +22,8 @@
       color: #0094FF;
 
       @include media-query($on-mobile) {
-        font-size: $mobile-small-font-size - 0.5;
+        font-size: $mobile-small-font-size;
+        font-weight: 700;
         color: #0094FF;
       }
 
@@ -130,7 +131,7 @@
     padding-bottom: $spacing-full - 22;
 
     @include media-query($on-mobile) {
-      padding-top: $spacing-full - 15;
+      padding-top: $spacing-full - 30;
       padding-bottom: $spacing-full - 15;
     }
   }
@@ -251,9 +252,11 @@
 
   h5 {
     @include relative-font-size(1);
+    margin-top: 10px;
 
     @include media-query($on-mobile) {
       font-size: $mobile-base-font-size * 1;
+      margin-top: 10px;
     }
   }
 
