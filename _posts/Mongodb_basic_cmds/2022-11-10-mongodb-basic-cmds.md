@@ -85,6 +85,44 @@ flights> db.flightData.find()
 
 &nbsp;
 
+##### more .find()
+
+- `{$gt}` & `{$lt}`
+
+~~~javascript
+flights> db.flightData.find({distance: {$gt: 900}})
+[
+  {
+    _id: ObjectId("637f0fcccc1248595ce1c248"),
+    departureAirport: 'MUC',
+    arrivalAirport: 'SFO',
+    aircraft: 'Airbus A380',
+    distance: 12000,
+    intercontinental: true,
+    marker: 'deleted'
+  },
+~~~
+
+&nbsp;
+
+- **Projection**으로 원하는 데이터만 출력 가능하다 `.find({},{name :1})`
+
+1대신 0을 넣어서 `aircraft: 0` 으로 조회한다면 `aircraft`field만 빼고 반환이 가능하다.
+
+~~~javascript
+flights> db.flightData.find({}, {aircraft: 1})
+[
+  {
+    _id: ObjectId("637f52399ed8d2bb69a58387"),
+    aircraft: 'Airbus A380'
+  },
+  {
+    _id: ObjectId("637f52399ed8d2bb69a58388"),
+    aircraft: 'Airbus A320'
+  }
+]
+~~~
+
 
 
 <br>
@@ -165,18 +203,6 @@ flights> db.flightData.find()
 <img src="1.png" alt="MongoDB CRUD">
 <figcaption>Fig 1. Types of MongoDB CRUD Operations</figcaption>
 </figure>
-
-<br>
-
-#### Find
-
-##### .insertMany()
-
-~~~javascript
-~~~
-
-
-
 <br>
 
 #### Delete
@@ -203,6 +229,8 @@ flights> db.flightData.updateOne({distance: 12000}, {marker: "deleted"})
 MongoInvalidArgumentError: Update document requires atomic operators
 ~~~
 
+&nbsp;
+
 이런 경우엔, **Reserved Operator**를 사용해서 `marker`라는 값이 존재한다면 수행하고, 없으면 replace 할 수 있다.
 
 ~~~javascript
@@ -228,13 +256,149 @@ flights> db.flightData.find()
   },
 ~~~
 
+&nbsp;
+
+##### updateOne() vs updateMany() vs update()
+
+`updateOne()`
+
+~~~javascript
+flights> db.flightData.updateOne({ _id: 'my-id-txl2' }, { airline: 'Deleted' })
+MongoInvalidArgumentError: Update document requires atomic operators
+~~~
+
+`updateMany()`
+
+~~~javascript
+flights> db.flightData.updateMany({ _id: 'my-id-txl2' }, { airline: 'Deleted' })
+MongoInvalidArgumentError: Update document requires atomic operators
+~~~
+
+`update()`
+
+원래는 `$set`옵션을 주지 않아도 `update`가 되었지만 v6.7 이후로는 이 명령어가 **deprecated** 되었다고 한다.
+
+- `.replaceOne()` 을 쓰도록 하자.
+
+<br>
+
+### 4. Cursor Object
+
+30개의 element가 있는 json을 mongoDB에 넣고 `find()`해보자.
+
+~~~javascript
+[
+  {
+    "name": "Max Schwarzmueller",
+    "age": 29
+  },
+ ...
+ ...
+   {
+    "name": "Gordon Black",
+    "age": 38
+  }
+]
+~~~
+
+&nbsp;
+
+아래 결과를 보면 모든 결과를 출력하지 않고 결과가 잘린것을 볼 수 있다.  ***왜 그런것일까?***
+
+~~~javascript
+passengers> db.passengers.find()
+...
+  {
+    _id: ObjectId("637f49a79ed8d2bb69a58384"),
+    name: 'Klaus Arber',
+    age: 53
+  },
+  {
+    _id: ObjectId("637f49a79ed8d2bb69a58385"),
+    name: 'Albert Twostone',
+    age: 68
+  }
+]
+Type "it" for more
+~~~
+
+&nbsp;
+
+**MongoDB**의 `find()` 는 결과로 **Document**를 반환하지 않고 **Cursor** **Object**를 반환한다.
+
+이는 엄청나게 큰 Document를 출력하지 않기 위함이며, cursor method로 내가 원하는 결과를 **filter** 해서 볼 수 있다. `toArray()`나 `forEach()` 같은 **arguement**를 넣어서 결과를 출력할 수 있다.
+
+~~~javascript
+passengers> db.passengers.find().forEach((myargs) => {printjson(myargs)})
+...
+{
+  _id: ObjectId("637f49a79ed8d2bb69a58386"),
+  name: 'Gordon Black',
+  age: 38
+}
+~~~
 
 
 
+<br>
+
+### Arrays
+
+MongoDB에서는 Embed Documents 와 Array를 활용해 다양한 형태의 데이터를 저장할 수 있다.
+
+~~~javascript
+passengers> db.passengers.updateOne({name: "Albert Twostone"}, {$set: {hobbies: ["sports", "cooking"]}})
+
+passengers> db.passengers.find({name: "Albert Twostone"})
+[
+  {
+    _id: ObjectId("637f49a79ed8d2bb69a58385"),
+    name: 'Albert Twostone',
+    age: 68,
+    hobbies: [ 'sports', 'cooking' ]
+  }
+]
+~~~
+
+&nbsp;
+
+##### find array objects
+
+특정 인원의 **Array**를 찾을때는 `findOne()` 을 사용하고, `sports`가 **hobbies**인 경우는 `find()`를 사용한다.
+
+~~~javascript
+passengers> db.passengers.findOne({name: "Albert Twostone"}).hobbies
+[ 'sports', 'cooking' ]
+
+passengers> db.passengers.find({hobbies: "sports"})
+[
+  {
+    _id: ObjectId("637f49a79ed8d2bb69a58385"),
+    name: 'Albert Twostone',
+    age: 68,
+    hobbies: [ 'sports', 'cooking' ]
+  }
+]
+~~~
 
 
 
+##### nested documents
 
+~~~javascript
+passengers> db.passengers.updateOne({name: "Albert Twostone"}, {$set: {status: {description: "on-time", lastUpdate:"19:00:00"} }})
+
+passengers> db.passengers.find({"status.description": "on-time"})
+[
+  {
+    _id: ObjectId("637f49a79ed8d2bb69a58385"),
+    name: 'Albert Twostone',
+    age: 68,
+    hobbies: [ 'sports', 'cooking' ],
+    status: { description: 'on-time', lastUpdate: '19:00:00' }
+  }
+]
+~~~
 
 
 
