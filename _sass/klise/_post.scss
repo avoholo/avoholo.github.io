@@ -127,11 +127,11 @@
     margin: 0;
     //padding-top: $spacing-full - 15;
     //padding-bottom: $spacing-full - 15;
-    padding-top: $spacing-full - 30;
+    padding-top: $spacing-full - 25;
     padding-bottom: $spacing-full - 22;
 
     @include media-query($on-mobile) {
-      padding-top: $spacing-full - 30;
+      padding-top: $spacing-full - 23;
       padding-bottom: $spacing-full - 15;
     }
   }

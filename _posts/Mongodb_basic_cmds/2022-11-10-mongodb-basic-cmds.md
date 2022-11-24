@@ -9,7 +9,7 @@ image: "/Mongodb_basic_cmds/default_post_image.png"
 
 ![default_post_image](https://raw.githubusercontent.com/avoholo/avoholo.github.io/master/_posts/Template_walkthrough/default_post_image.png)
 
-
+<hr style="height:30px; visibility:hidden;" />
 
 이번 포스트에선 
 
@@ -19,160 +19,222 @@ image: "/Mongodb_basic_cmds/default_post_image.png"
 
 DB & Collections 생성, MongoDB에선 CRUD를 어떻게 수행하는지 알아보자.
 
-<hr style="height:1px; visibility:hidden;" />
+<hr style="height:10px; visibility:hidden;" />
 
-##### 'Number' as starter of variable name
+#### 1. Quick Example with insert
 
-~~~javascript
-let 3years = 3;
-Uncaught SyntaxError: Invalid or unexpected token
+##### JSON Data
+
+~~~json
+  {
+    "departureAirport": "MUC",
+    "arrivalAirport": "SFO",
+    "aircraft": "Airbus A380",
+    "distance": 12000,
+    "intercontinental": true
+  },
+  {
+    "departureAirport": "LHR",
+    "arrivalAirport": "TXL",
+    "aircraft": "Airbus A320",
+    "distance": 950,
+    "intercontinental": false
+  }
 ~~~
 
-##### '&' as in variable name
+&nbsp;
+
+##### switch db & insert
 
 ~~~javascript
-let john&kim = "john kim";
-Uncaught SyntaxError: Unexpected token '&'
-~~~
+shop> use flights
+switched to db flights
 
-##### Reserved Keyword as variable name
-
-~~~javascript
-// Not Recommended.
-let name = 'John'
-~~~
-
-##### All Uppercase for constants
-
-~~~javascript
-let PI = 3.14159;
-~~~
-
-##### Descriptive variable name
-
-~~~javascript
-let myFirstJob = 'Student'
-let myCurrentJob = 'Programmer'
-
-let job1 = 'programer..'
-let jb2 = 'program?'
-~~~
-
-
-
-##### Summary
-
-| **Type**                   | **Example**                      |
-| -------------------------- | -------------------------------- |
-| **Int**                    | 3                                |
-| **Special Characters**     | !@#$%^&*()'/                     |
-| *Reserved Keyword          | name, int, long, char, interface |
-| *Uppercase Constants       | PI                               |
-| *Descriptive variable name | let myCurrentJob = 'Programmer'  |
-
-**\*** : **Convention**이기에 필수는 아니지만 지키길 권장한다.
-
-<br>
-
-#### Data Types
-
-다른 언어와 달리 중요 포인트들이 있는것 같다.
-
-##### Undefined vs Null
-
-어떤 이유로 javascript에선 `null` 이 object로 인식이 되는지 궁금해서 찾아봤더니..
-
-legacy issue로 인해 **알고는있지만 고치지않은 버그**라고 한다.
-
-~~~javascript
-let year;
-console.log(year);
-console.log(typeof year);
-console.log("null:", typeof null);
-
-undefined
-undefined
-undefined
-null: object
-~~~
-
-아래 두줄로 명확하게 Null과 Undefined를 구분할 수 있다.
-
-~~~javascript
-alert(null !== undefined) //true
-alert(null == undefined)  //true
-~~~
-
-- `null`과 `undefined`는 둘다 **Primitive Type**이 맞지만,
-- `undefined`는 존재하는지 유/무 조차 알 수 없고
-- `null`은 존재한다는건 알지만, 어떤 값이 assign 되었는지 모르는 상태이다.
-
-<br>
-
-##### Dynamic Typing
-
-- Variable에게 Type을 지정하는것이아닌, Value의 타입으로 정해진다.
-
-
-
-##### const vs let (ES6)
-
-`let` 은 **reassignment**가 가능한 **mutable** 변수이고, `const`는 **immutable**이다.
-
-immutable이라는 말은 즉슨, 필수적으로 initialized가 되어야한다.
-
-~~~javascript
-const birthYear;
-Uncaught SyntaxError: Missing initializer in const 
-
-const birthYear = 2000;
-birthYear = 1990;
-Uncaught TypeError: Assignment to constant variable.
-~~~
-
-***Best Practice***는 `const`를 default로 쓰되, 변경이 될만한 변수만 `let`으로 사용하는것이다.
-
-**tip**: `ES6` 이전에는 `var`가 `let` 역할을 했었으나 엄연히 다르게 동작하므로 해당 개념은 다음 포스트에 설명 할 예정이다. 일단 `var`는 모르면 쓰지말자.
-
-<br>
-
-<br>
-
-### Functions
-
-<hr style="height:20px; visibility:hidden;" />
-
-#### Declaration vs Expression
-
-**tip:** javascript에선 function 또한 `object`가 아닌 `value`로 인식한다.
-
-~~~javascript
-function declarationCalculateBMI(weight, height) {
-    return weight / (height * height)
-}
-
-const expressionCalculateBMI = function (weight, height) {
-    return weight / (height * height)
+flights> db.flightData.insertOne({
+...     "departureAirport": "MUC",
+...     "arrivalAirport": "SFO",
+...     "aircraft": "Airbus A380",
+...     "distance": 12000,
+...     "intercontinental": true
+...   })
+{
+  acknowledged: true,
+  insertedId: ObjectId("637f0fcccc1248595ce1c248")
 }
 ~~~
 
-`expression` 과 `declaration`의 차이는 아래 코드를 통해 바로 알 수 있다.
+&nbsp;
+
+##### .find() & .pretty()
+
+최신 버전의 `mongosh` 은 `pretty()` 나 `find()` 둘다 가독성 좋게 값을 출력한다.
 
 ~~~javascript
-const john = declarationCalculateBMI(70, 190)
-function declarationCalculateBMI(weight, height) {
-    return weight / (height * height)
-}
-
-const dave = expressionCalculateBMI(60, 170)
-const expressionCalculateBMI = function (weight, height) {
-    return weight / (height * height)
-}
-
-console.log(`John: ${john} and Dave: ${dave}`)
+flights> db.flightData.find()
+[
+  {
+    _id: ObjectId("637f0fcccc1248595ce1c248"),
+    departureAirport: 'MUC',
+    arrivalAirport: 'SFO',
+    aircraft: 'Airbus A380',
+    distance: 12000,
+    intercontinental: true
+  }
+]
 ~~~
 
-`expression`은 `value`를 생성하기 때문에 initialize전에 수행이 불가능하다. 따라서, `expressionCalculateBMI` 수행시 에러가 발생한다.
+&nbsp;
+
+
+
+<br>
+
+### 2. Fundamentals
+
+위 실습을 통해 알 수 있었던 `MongoDB` 만의 **장점**을 알아보자.
+
+##### JSON vs BSON
+
+우리가 넣은 `JSON` 데이터는 `MongoDB Driver`를 통해 `BSON` 으로 변환된다. 이게 왜 중요할까?
+
+`.find()`로 찾은 아래 형식의 데이터는 JSON 형식이 아니며, 고유 ID가 포함된걸 볼 수 있다. 많은 데이터를 효율적으로 적재하기 위해 `JSON`을 `Binary` 형식으로 변환한 것이다. 
+
+~~~javascript
+  {
+    _id: ObjectId("637f0fcccc1248595ce1c248"),
+    departureAirport: 'MUC',
+  ...
+  ...
+~~~
+
+&nbsp;
+
+##### No Schema
+
+`MongoDB` 에선 **Schema**가 없다. 이말인 즉슨, Data 를 넣을때 매우 **Flexible** 하다는것이다. 이미 정의된 **Schema**대로 없던 컬럼을 만들어서 넣거나, 구조를 새로 맞출 필요가 없다는것이다.
+
+~~~javascript
+db.flightData.insertOne({"_id": "my-id-txl", // Custom-ID 추가
+"departureAirport": "LHR",
+"arrivalAirport": "TXL",
+"aircraft": "Airbus A320",
+"distance": 950,
+"intercontinental": false,
+"airline": "Asiana"}) // airline 또한 추가하였다.
+
+flights> db.flightData.find()
+[
+  {
+    _id: ObjectId("637f0fcccc1248595ce1c248"),
+    departureAirport: 'MUC',
+    arrivalAirport: 'SFO',
+    aircraft: 'Airbus A380',
+    distance: 12000,
+    intercontinental: true
+  },
+  {
+    _id: 'my-id-txl',
+    departureAirport: 'LHR',
+    arrivalAirport: 'TXL',
+    aircraft: 'Airbus A320',
+    distance: 950,
+    intercontinental: false,
+    airline: 'Asiana'
+  },
+  {
+    _id: 'my-id-txl2',
+    departureAirport: 'LHR',
+    arrivalAirport: 'TXL',
+    aircraft: 'Airbus A320',
+    distance: 950,
+    intercontinental: false,
+    airline: 'Asiana'
+  }
+]
+~~~
+
+<hr style="height:10px; visibility:hidden;" />
+
+하지만.. **ID**만 다르면 똑같은 데이터를 넣어도 `insert`가 된다.. 중복된 데이터 관리를 어떻게 관리하는지 더 알아봐야겠다.
+
+&nbsp;
+
+### 3. CRUD in MongoDB
+
+<figure>
+<img src="1.png" alt="MongoDB CRUD">
+<figcaption>Fig 1. Types of MongoDB CRUD Operations</figcaption>
+</figure>
+
+<br>
+
+#### Find
+
+##### .insertMany()
+
+~~~javascript
+~~~
+
+
+
+<br>
+
+#### Delete
+
+##### .deleteOne()
+
+LIFO 형식으로 Document가 삭제된다.
+
+~~~javascript
+flights> db.flightData.deleteOne({departureAirport: "LHR"})
+{ acknowledged: true, deletedCount: 1 }
+~~~
+
+<br>
+
+#### Update
+
+##### .updateOne() with reserved operator ($)
+
+아래와 같이 데이터 형식이 맞지 않을때 에러가 발생한다.
+
+~~~javascript
+flights> db.flightData.updateOne({distance: 12000}, {marker: "deleted"})
+MongoInvalidArgumentError: Update document requires atomic operators
+~~~
+
+이런 경우엔, **Reserved Operator**를 사용해서 `marker`라는 값이 존재한다면 수행하고, 없으면 replace 할 수 있다.
+
+~~~javascript
+flights> db.flightData.updateOne({distance: 12000}, {$set: {marker: "deleted"}})
+{
+  acknowledged: true,
+  insertedId: null,
+  matchedCount: 1,
+  modifiedCount: 1,
+  upsertedCount: 0
+}
+
+flights> db.flightData.find()
+[
+  {
+    _id: ObjectId("637f0fcccc1248595ce1c248"),
+    departureAirport: 'MUC',
+    arrivalAirport: 'SFO',
+    aircraft: 'Airbus A380',
+    distance: 12000,
+    intercontinental: true,
+    marker: 'deleted'
+  },
+~~~
+
+
+
+
+
+
+
+
 
 
 
