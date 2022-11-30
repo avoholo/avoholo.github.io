@@ -7,7 +7,7 @@ description:
 image: "/_posts/JS_basic_cmds/default_post_image.png"
 ---
 
-![default_post_image](https://raw.githubusercontent.com/avoholo/avoholo.github.io/master/_posts/Template_walkthrough/default_post_image.png)
+![default_post_image](https://raw.githubusercontent.com/avoholo/avoholo.github.io/master/_posts/JS_basic_cmds/default_post_image.png)
 
 
 

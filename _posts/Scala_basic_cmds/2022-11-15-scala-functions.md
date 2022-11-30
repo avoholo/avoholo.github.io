@@ -8,18 +8,11 @@ image: "/_posts/Scala_basic_cmds/default_post_image.png"
 ---
 
 <figure>
-<img src="https://raw.githubusercontent.com/avoholo/avoholo.github.io/master/_posts/Template_concept-notes-detail/default_post_image.png" alt="default_post_image">
-<figcaption>Fig 1. </figcaption>
+<img src="https://raw.githubusercontent.com/avoholo/avoholo.github.io/master/_posts/Scala_basic_cmds/default_post_image.png" alt="default_post_image">
+<figcaption>Fig 1. Scala</figcaption>
 </figure>
 
-
-
-
-Template<sup id="medium">[[1]](#medium-ref)</sup>
-
-
-
-
+<hr style="height:20px; visibility:hidden;" />
 
 ### Functions
 

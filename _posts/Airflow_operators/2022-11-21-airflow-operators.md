@@ -7,7 +7,7 @@ description: Airflow Operators
 image: "/_posts/Airflow_operators/default_post_image.png"
 ---
 
-![default_post_image](https://raw.githubusercontent.com/avoholo/avoholo.github.io/master/_posts/Git_git_fundamental_walkthrough/default_post_image.png)
+![default_post_image](https://raw.githubusercontent.com/avoholo/avoholo.github.io/master/_posts/Airflow_operators/default_post_image.png)
 
 
 
@@ -16,9 +16,10 @@ image: "/_posts/Airflow_operators/default_post_image.png"
 ## How it works
 
 <figure>
-<img src="https://raw.githubusercontent.com/avoholo/avoholo.github.io/master/_posts/Git_git_fundamental_walkthrough/how_git_works.png" alt="how_git_works">
-<figcaption>Fig 1. Airflow DAGs</figcaption>
+<img src="https://raw.githubusercontent.com/avoholo/avoholo.github.io/master/_posts/Airflow_operators/how_it_works.png" alt="how_git_works">
+<figcaption>Fig 1. Airflow Architecure</figcaption>
 </figure>
+
 
 
 ***

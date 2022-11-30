@@ -3,25 +3,20 @@ title: "Groovy - String, Files, Iteration"
 date: 2022-11-15 00:00:00 +09:00
 modified: 2022-11-15 00:00:00 +09:00
 tags: [Scala]
-description: Scala Basic Commands. 
+description: Groovy Basic Commands. 
 image: "/_posts/$folder_name/default_post_image.png"
 ---
 
 <figure>
-<img src="https://raw.githubusercontent.com/avoholo/avoholo.github.io/master/_posts/Template_concept-notes-detail/default_post_image.png" alt="default_post_image">
-<figcaption>Fig 1. </figcaption>
+<img src="https://raw.githubusercontent.com/avoholo/avoholo.github.io/master/_posts/Groovy_basic_cmds/default_post_image.png" alt="default_post_image">
+<figcaption>Fig 1. Apache Groovy</figcaption>
 </figure>
 
 
 
 
-Template<sup id="medium">[[1]](#medium-ref)</sup>
-
-
 
 [GroovyWebConsole](https://groovyconsole.appspot.com) 여기가 Groovy Online Compiler중에선 가장 빠른거같다.
-
-
 
 
 
