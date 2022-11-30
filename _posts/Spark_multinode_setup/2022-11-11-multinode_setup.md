@@ -690,8 +690,6 @@ RM이 `Yarn` 으로 설정되어 있다면<sup id="yarn">[[2]](#yarn-ref)</sup>,
 
 ### 6. Spark Standalone vs Spark Cluster (Yarn)
 
-이제부터 중요해진다. (Chapter2-28을 다시 봐야할거같다...) 
-
 <br>
 
 #### Spark Cluster로 word count 수행

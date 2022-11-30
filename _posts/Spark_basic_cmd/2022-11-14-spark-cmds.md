@@ -1,5 +1,5 @@
 ---
-title: "Spark 기본 명령어"
+title: "Spark 명령어 모음"
 date: 2022-11-14 09:00:00 +07:00
 modified: 2022-11-14 09:00:00 +07:00
 tags: [Spark]
@@ -12,7 +12,7 @@ image: "/_posts/Spark_basic_cmd/default_post_image.png"
 <figcaption>Fig 1. Apache Spark</figcaption>
 </figure>
 
-이번 포스트에선 Scala의 Array API를 통해 Word Count를 수행해보고 Spark RDD API로 비슷한 데이터를 가지고 WordCount를 수행 했을 때 어떤 차이점이 있는지 알아볼 예정이다.
+이번 포스트에선 `Scala`의 **Array API**를 통해 WordCount를 수행하고, `Spark`의 **RDD API**로 동일하게 WordCount를 수행 했을 때 **어떤 차이점이 있는지 알아볼 예정**이다.
 
 
 
@@ -66,48 +66,48 @@ object WordCountScala {
     var output = "/spark/spark3/README.wordcount_scala"
     var delimiter = " "
     
-    //--데이터(파일) 읽기.... 줄(line) 단위 읽기.... => arr: Array[String]
+    // 데이터(파일) 읽기, 줄(line) 단위 읽기 => arr: Array[String]
     val arr = Source.fromFile(input).getLines.toArray
     println(">>>> Line Count : " + arr.count(line => true))
     
-    //--단어(word) 추출 + 레코드(element)화.... => arr2: Array[String]
+    // 단어(word) 추출 + 레코드(element)화 => arr2: Array[String]
     val arr2 = arr.flatMap(line => line.split(delimiter))
 
-    //--튜플 구성.... (word, 1).... => arr3: Array[(String, Int)]
+    // 튜플 구성 (word, 1) => arr3: Array[(String, Int)]
     val arr3 = arr2.map(word => (word, 1))
 
-    //--단어(word)별 그룹핑.... => arr4: Array[(String, Array[(String, Int)])]
+    // 단어(word)별 Group => arr4: Array[(String, Array[(String, Int)])]
     val arr4 = arr3.groupBy(tuple => tuple._1).toArray
 
-    //--그룹핑 배열 값(value)에서 "1"만 남기기.... => arr5: Array[(String, Array[Int])]
+    // 그룹핑 배열 값(value)에서 "1"만 남기기 => arr5: Array[(String, Array[Int])]
     val arr5 = arr4.map(tuple_grouped => (tuple_grouped._1, tuple_grouped._2.map(tuple => tuple._2)))
 
-    //--그룹핑 배열 값(value) 모두 더하여 하나의 값으로 만들기(reduce).... => arr6: Array[(String, Int)]
+    // 그룹핑 배열 값(value) 모두 더하여 하나의 값으로 만들기(reduce) => arr6: Array[(String, Int)]
     val arr6 = arr5.map(tuple_grouped => (tuple_grouped._1, tuple_grouped._2.reduce((v1, v2) => v1 + v2)))
     
-    //--단어별 개수(word count) 출력....
+    // 단어별 개수(word count) 출력
     arr6.foreach(word_count => println(">>>> word count : " + word_count))
     
-    //--개수(count) 내림차순(descending) 정렬.... => arr7: Array[(String, Int)]
+    // 개수(count) 내림차순(descending) 정렬 => arr7: Array[(String, Int)]
     val arr7 = arr6.sortBy(tuple => -tuple._2)
 
-    //--단어별 개수(word count) 출력.... (count desc)
+    // 단어별 개수(word count) 출력 (count desc)
     arr7.foreach(word_count => println(">>>> word count (count desc) : " + word_count))
 
-    //--정렬 기준 정의.... (count desc, word asc).... => ordering: Ordering[(String, Int)]
+    // 정렬 기준 정의 (count desc, word asc) => ordering: Ordering[(String, Int)]
     val ordering = new Ordering[(String, Int)] {
       override def compare(a: (String, Int), b: (String, Int)) = {
         if((a._2 compare b._2) == 0) (a._1 compare b._1) else -(a._2 compare b._2)
       }
     }
     
-    //--개수(count) 내림차순(descending) + 단어(word) 오름차순(ascending) 정렬.... => arr8: Array[(String, Int)]
+    // 개수(count) 내림차순(descending) + 단어(word) 오름차순(ascending) 정렬 => arr8: Array[(String, Int)]
     val arr8 = arr6.sortBy(tuple => tuple)(ordering)
 
-    //--단어별 개수(word count) 출력.... (count desc, word asc)
+    // 단어별 개수(word count) 출력 (count desc, word asc)
     arr8.foreach(word_count => println(">>>> word count (count desc, word asc) : " + word_count))
 
-    //--단어별 개수(word count) 파일로 저장....
+    // 단어별 개수(word count) 파일로 저장
     new PrintWriter(output) { write(arr8.mkString("\n")); close }
   }
 
@@ -191,54 +191,31 @@ object WordCountSpark {
     var output = "/spark/spark3/README.wordcount_spark"
     var delimiter = " "
 
-    //--Spark를 위한 기본(base) 컨텍스트 생성.... SparkContext 생성....
     val sc = new SparkContext()
-
-    //--데이터(파일) 읽기.... 줄(line) 단위 읽기.... => rdd: org.apache.spark.rdd.RDD[String]
     val rdd = sc.textFile(input)
     println(">>>> Line Count : " + rdd.count())
-
-    //--단어(word) 추출 + 레코드(element)화.... => rdd2: org.apache.spark.rdd.RDD[String]
     val rdd2 = rdd.flatMap(line => line.split(delimiter))
-
-    //--튜플 구성.... (word, 1).... => rdd3: org.apache.spark.rdd.RDD[(String, Int)]
     val rdd3 = rdd2.map(word => (word, 1))
-
-    //--단어(word)별 그룹핑.... => rdd4: org.apache.spark.rdd.RDD[(String, Iterable[(String, Int)])]
     val rdd4 = rdd3.groupBy(tuple => tuple._1)
-
-    //--그룹핑 배열 값(value)에서 "1"만 남기기.... => rdd5: org.apache.spark.rdd.RDD[(String, Iterable[Int])]
     val rdd5 = rdd4.map(tuple_grouped => (tuple_grouped._1, tuple_grouped._2.map(tuple => tuple._2)))
-
-    //--그룹핑 배열 값(value) 모두 더하여 하나의 값으로 만들기(reduce).... => rdd6: org.apache.spark.rdd.RDD[(String, Int)]
     val rdd6 = rdd5.map(tuple_grouped => (tuple_grouped._1, tuple_grouped._2.reduce((v1, v2) => v1 + v2)))
-    
-    //--단어별 개수(word count) 출력....
     rdd6.foreach(word_count => println(">>>> word count : " + word_count))
-    
-    //--개수(count) 내림차순(descending) 정렬.... => rdd7: org.apache.spark.rdd.RDD[(String, Int)]
     val rdd7 = rdd6.sortBy(tuple => -tuple._2)
-
-    //--단어별 개수(word count) 출력.... (count desc)
     rdd7.foreach(word_count => println(">>>> word count (count desc) : " + word_count))
 
-    //--정렬 기준 정의.... (count desc, word asc).... => ordering: Ordering[(String, Int)]
+   
     val ordering = new Ordering[(String, Int)] {
       override def compare(a: (String, Int), b: (String, Int)) = {
         if((a._2 compare b._2) == 0) (a._1 compare b._1) else -(a._2 compare b._2)
       }
     }
     
-    //--개수(count) 내림차순(descending) + 단어(word) 오름차순(ascending) 정렬.... => rdd8: org.apache.spark.rdd.RDD[(String, Int)]
     val rdd8 = rdd6.sortBy(tuple => tuple)(ordering, implicitly[scala.reflect.ClassTag[(String, Int)]])
 
-    //--단어별 개수(word count) 출력.... (count desc, word asc)
     rdd8.foreach(word_count => println(">>>> word count (count desc, word asc) : " + word_count))
 
-    //--단어별 개수(word count) 파일로 저장....
     rdd8.saveAsTextFile(output)
 
-    //--SparkContext 중지....
     sc.stop()
   }
 }
@@ -308,7 +285,7 @@ _SUCCESS
 cat part-* | more
 ~~~
 
-
+<br>
 
 ##### application으로 실행했을 경우
 

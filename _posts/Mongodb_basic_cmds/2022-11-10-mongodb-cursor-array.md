@@ -1,5 +1,5 @@
 ---
-title: "MongoDB 기초 (1)"
+title: "MongoDB Cursor and Array"
 date: 2022-11-10 00:00:00 +07:00
 modified: 2022-11-10 00:00:00 +07:00
 tags: [MongoDB]
@@ -11,13 +11,13 @@ image: "/Mongodb_basic_cmds/default_post_image.png"
 
 <hr style="height:30px; visibility:hidden;" />
 
-이번 포스트에선 
+이번 포스트에선 NoSQL인 MongoDB 기본기의 핵심인 **Cursor**와 **Array**를 빠르게 Summary하려고한다.
 
 
 
 ### Quick Setup
 
-DB & Collections 생성, MongoDB에선 CRUD를 어떻게 수행하는지 알아보자.
+**Cursor**와 **Array**를 알아보기전에 MongoDB에선 DB & Collections 생성, CRUD를 어떻게 수행하는지 알아보자.
 
 <hr style="height:10px; visibility:hidden;" />
 

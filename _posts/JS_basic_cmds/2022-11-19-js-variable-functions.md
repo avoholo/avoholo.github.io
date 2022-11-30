@@ -1,5 +1,5 @@
 ---
-title: "JavaScript 기초 (1)"
+title: "JavaScript - Varaible and Functions"
 date: 2022-11-19 00:00:00 +07:00
 modified: 2022-11-19 00:00:00 +07:00
 tags: [Javascript]
@@ -11,7 +11,7 @@ image: "/_posts/JS_basic_cmds/default_post_image.png"
 
 
 
-이번 포스트에선 
+요즘 `React` 제품 트러블 슈팅때문에 `javascript`를 쓸일이 많아졌다. 기본기를 다시 다지기 위해 이번 포스트에선 **핵심**이되는 기본기만 Summary 해보았다.
 
 
 

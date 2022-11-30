@@ -1,5 +1,5 @@
 ---
-title: "Scala 기초(1) - Functions"
+title: "Scala의 Functions"
 date: 2022-11-15 00:00:00 +09:00
 modified: 2022-11-15 00:00:00 +09:00
 tags: [Scala]
@@ -85,13 +85,6 @@ Hello, Scala!
 
 <hr style="height:20px; visibility:hidden;" />
 
-#### 실습
-
-~~~scala
-~~~
-
-<br>
-
 ### Function with Variable Arguments
 
 <hr style="height:20px; visibility:hidden;" />
@@ -121,52 +114,6 @@ Arg value[2] = Python
 ~~~
 
 
-
-
-
-##### Data Replication
-
-
-
-
-
-##### Persistence of File System Metadata
-
-
-
-
-
-##### The Communication Protocols
-
-
-
-
-
-### Best Practice (Do & Don't)
-
-##### &#9940;Don't - 
-
-##### &#9940;Don't - 
-
-##### &#9989;Do - 
-
-##### &#9989;Do -
-
-
-
-### Limitation&#10060;
-
-#### 1. 
-
-
-
-**Solution &#10004;** 
-
-- **Merge the small files** - 
-- **HAR** - 
-- **Sequence files** -
-
-#### 2. 
 
 
 
