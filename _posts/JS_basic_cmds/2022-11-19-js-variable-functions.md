@@ -21,34 +21,42 @@ image: "/_posts/JS_basic_cmds/default_post_image.png"
 
 #### Syntax and Conventions
 
-##### 'Number' as starter of variable name
+##### 1. 'Number' as starter of variable name (&#9940;Don't)
 
 ~~~javascript
 let 3years = 3;
 Uncaught SyntaxError: Invalid or unexpected token
 ~~~
 
-##### '&' as in variable name
+<hr style="height:20px; visibility:hidden;" />
+
+##### 2. '&' as in variable name  (&#9940;Don't)
 
 ~~~javascript
 let john&kim = "john kim";
 Uncaught SyntaxError: Unexpected token '&'
 ~~~
 
-##### Reserved Keyword as variable name
+<hr style="height:20px; visibility:hidden;" />
+
+##### 3. Reserved Keyword as variable name  (&#9940;Don't)
 
 ~~~javascript
 // Not Recommended.
 let name = 'John'
 ~~~
 
-##### All Uppercase for constants
+<hr style="height:20px; visibility:hidden;" />
+
+##### 4. All Uppercase for constants (&#9888;Warning)
 
 ~~~javascript
 let PI = 3.14159;
 ~~~
 
-##### Descriptive variable name
+<hr style="height:20px; visibility:hidden;" />
+
+##### Descriptive variable name (&#9888;Warning)
 
 ~~~javascript
 let myFirstJob = 'Student'
@@ -58,7 +66,7 @@ let job1 = 'programer..'
 let jb2 = 'program?'
 ~~~
 
-
+<hr style="height:20px; visibility:hidden;" />
 
 ##### Summary
 

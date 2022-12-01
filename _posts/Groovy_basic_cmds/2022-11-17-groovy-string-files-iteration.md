@@ -2,7 +2,7 @@
 title: "Groovy - String, Files, Iteration"
 date: 2022-11-15 00:00:00 +09:00
 modified: 2022-11-15 00:00:00 +09:00
-tags: [Scala]
+tags: [Groovy]
 description: Groovy Basic Commands. 
 image: "/_posts/$folder_name/default_post_image.png"
 ---

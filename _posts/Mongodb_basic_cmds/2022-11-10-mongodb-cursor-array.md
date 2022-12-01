@@ -1,7 +1,7 @@
 ---
 title: "MongoDB Cursor and Array"
 date: 2022-11-10 00:00:00 +07:00
-modified: 2022-11-10 00:00:00 +07:00
+modified: 2022-12-01 00:00:00 +07:00
 tags: [MongoDB]
 description:
 image: "/Mongodb_basic_cmds/default_post_image.png"
@@ -16,6 +16,41 @@ image: "/Mongodb_basic_cmds/default_post_image.png"
 
 
 ### Quick Setup
+
+~~~bash
+cat <<EOF> /etc/yum.repos.d/mongodb-org-6.0.repo
+[mongodb-org-6.0]
+name=MongoDB Repository
+baseurl=https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/6.0/x86_64/
+gpgcheck=1
+enabled=1
+gpgkey=https://www.mongodb.org/static/pgp/server-6.0.asc
+EOF
+~~~
+
+##### Install
+
+~~~bash
+yum repolist
+mongodb-org-6.0
+mongodb-org-6.0/7/primary_db
+
+yum install -y mongodb-org
+~~~
+
+##### Start
+
+~~~bash
+sed -i 's/bindIp: 127.0.0.1/bindIp: 0.0.0.0/g' /etc/mongod.conf
+systemctl start mongod
+
+systemctl status mongod
+● mongod.service - MongoDB Database Server
+   Loaded: loaded (/usr/lib/systemd/system/mongod.service; enabled; vendor preset: disabled)
+   Active: active (running) since Thu 2022-12-01 00:43:03 EST; 7s ago
+~~~
+
+<br>
 
 **Cursor**와 **Array**를 알아보기전에 MongoDB에선 DB & Collections 생성, CRUD를 어떻게 수행하는지 알아보자.
 
@@ -47,7 +82,13 @@ image: "/Mongodb_basic_cmds/default_post_image.png"
 ##### switch db & insert
 
 ~~~javascript
-shop> use flights
+test> show dbs
+admin        40.00 KiB
+config      108.00 KiB
+local        72.00 KiB
+flights   40.00 KiB
+
+test> use flights
 switched to db flights
 
 flights> db.flightData.insertOne({
@@ -399,6 +440,33 @@ passengers> db.passengers.find({"status.description": "on-time"})
   }
 ]
 ~~~
+
+
+
+##### nested documents with $in & $regex
+
+~~~javascript
+passengers> db.passengers.find({"status.description": {$in: ["on-time"]}})
+ {
+    _id: ObjectId("637f49a79ed8d2bb69a58385"),
+    name: 'Albert Twostone',
+    age: 68,
+    hobbies: [ 'sports', 'cooking' ],
+    status: { description: 'on-time', lastUpdate: '19:00:00' }
+ }
+
+
+passengers> db.passengers.find({"status.description": {$regex: "on"}})
+ {
+    _id: ObjectId("637f49a79ed8d2bb69a58385"),
+    name: 'Albert Twostone',
+    age: 68,
+    hobbies: [ 'sports', 'cooking' ],
+    status: { description: 'on-time', lastUpdate: '19:00:00' }
+ }
+~~~
+
+
 
 
 
