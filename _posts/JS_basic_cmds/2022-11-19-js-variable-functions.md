@@ -1,5 +1,5 @@
 ---
-title: "JavaScript - Varaible and Functions"
+title: "JavaScript - Variable and Functions"
 date: 2022-11-19 00:00:00 +07:00
 modified: 2022-11-19 00:00:00 +07:00
 tags: [Javascript]
@@ -78,7 +78,7 @@ let jb2 = 'program?'
 | *Uppercase Constants       | PI                               |
 | *Descriptive variable name | let myCurrentJob = 'Programmer'  |
 
-**\*** : **Convention**이기에 필수는 아니지만 지키길 권장한다.
+**\*** : **Convention**이기에 `Syntax Error`가 발생하지 않지만 지키길 권장한다.
 
 <br>
 
