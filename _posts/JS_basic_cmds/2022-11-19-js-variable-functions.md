@@ -1,5 +1,6 @@
 ---
 title: "JavaScript - Variable and Functions"
+subtitle: javascript
 date: 2022-11-19 00:00:00 +07:00
 modified: 2022-11-19 00:00:00 +07:00
 tags: [Javascript]

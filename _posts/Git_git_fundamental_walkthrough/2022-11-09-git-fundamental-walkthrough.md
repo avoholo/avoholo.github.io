@@ -1,5 +1,6 @@
 ---
 title: "Git 기본 명령어 walkthrough"
+subtitle: git
 date: 2022-11-09 00:00:47+0900
 modified: 2022-11-09 00:28:47+0900
 tags: [Git]

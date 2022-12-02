@@ -4,6 +4,7 @@ layout: compress
 
 <!DOCTYPE html>
 <html lang="{{ page.lang | default: site.lang | default: "en" }}">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.15.1/devicon.min.css">
 
 {% include header.html %}
 
@@ -40,7 +41,7 @@ layout: compress
             <span itemprop="keywords">
               {% for tag in tags %}
               <a class="tag"
-                href="/category/#{{tag | downcase | slugify}}">{{tag | upcase }}</a>{% unless forloop.last %},{% endunless %}
+                href="/category/#{{tag | downcase | slugify}}"><i class="devicon-{{tag | downcase}}-plain colored"></i> {{tag | upcase }}</a>{% unless forloop.last %},{% endunless %}
               {% endfor %}
             </span>
           </div>

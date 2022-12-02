@@ -6,6 +6,8 @@ excerpt: All post.
 comments: false
 ---
 
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.15.1/devicon.min.css">
+
 <div class="search-article">
   <label for="search-input" aria-hidden="true">
     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
@@ -36,7 +38,10 @@ comments: false
   <div style="position: relative; width: 30%; text-align: right; font-family: Verdana, Geneva, Tahoma, sans-serif;">
     <!--<a href="{{ post.tags }}">{{ post.tags }}</a>-->
     <!--<a href="/category/#{{post.tags}}" style="color: #0094FF;">{{ post.tags }}</a>-->
-    <a href="/category/#{{post.tags}}">{{ post.tags }}</a>
+   
+    <!--original tag names. 22-12-02-->
+    <!--<a href="/category/#{{post.tags}}">{{ post.tags }}</a>-->
+    <a href="/category/#{{post.tags}}"><i class="devicon-{{post.subtitle}}-plain colored"></i> {{ post.tags }}</a>
   </div>
 </article>
 {%- endfor -%}

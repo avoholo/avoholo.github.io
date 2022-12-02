@@ -1,5 +1,6 @@
 ---
 title: Introduction to OOP in Python
+subtitle: python
 date: 2022-11-05 11:58:47 +07:00
 modified: 2022-11-06 16:49:47 +07:00
 tags: [Python]

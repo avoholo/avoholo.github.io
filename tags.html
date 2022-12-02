@@ -4,7 +4,7 @@ permalink: /category/
 layout: page
 excerpt: Sorted article by tags.
 ---
-
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/devicons/devicon@v2.15.1/devicon.min.css">
 <div class="archive-tags">
   <a class="tag-item" href="#">all</a>
   {%- for tag in site.tags -%} 
@@ -15,7 +15,7 @@ excerpt: Sorted article by tags.
 
 {%- for tag in site.tags -%}
   {%- capture name -%}{{ tag | first }}{%- endcapture -%}
-  <h2 id="{{ name }}">{{ name | upcase }}</h2>
+  <h2 id="{{ name }}"><i class="devicon-{{name | downcase}}-plain colored"></i> {{ name | upcase }}</h2>
   {%- for post in site.tags[name] -%}
     <article class="post-item" id="results-container">
       <span class="post-item-date">{{ post.date | date: "%b %d, %Y" }}</span>
