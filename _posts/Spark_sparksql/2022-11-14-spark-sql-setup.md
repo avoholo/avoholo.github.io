@@ -42,7 +42,7 @@ import spark.implicits._
 ##### 2. Create Dataframes
 
 ~~~scala
-val df = spark.read.json(path)
+val df = spark.read.csv(path)
 df.show()
 ~~~
 
