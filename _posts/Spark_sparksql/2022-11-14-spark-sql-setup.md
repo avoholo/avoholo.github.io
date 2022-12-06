@@ -35,22 +35,94 @@ val spark = SparkSession
 // For implicit conversions - converting RDDs to DataFrames
 import spark.implicits._
 ~~~
-***Tip:**`Spark-Shell` 실행시 **SparkContext**는 `sc`라고 정의되어있고 **Spark-Session**은 `spark`라고 되어 있다.
+***Tip :** `Spark-Shell` 실행시 **SparkContext**는 `sc`라고 정의되어있고 **Spark-Session**은 `spark`라고 되어 있다.
 
 <hr style="height:30px; visibility:hidden;" />
 
 ##### 2. Create Dataframes
 
 ~~~scala
-val df = spark.read.csv(path)
+val df = spark.read.format("csv").option("header", "true").load(path)
 df.show()
++----------+---------+---------+----------+
+|article_id|author_id|viewer_id| view_date|
++----------+---------+---------+----------+
+|         1|        3|        5|2019-08-01|
+|         1|        3|        6|2019-08-02|
+|         2|        7|        7|2019-08-01|
+|         2|        7|        6|2019-08-02|
+|         4|        7|        1|2019-07-22|
+|         3|        4|        4|2019-07-21|
+|         3|        4|        4|2019-07-21|
++----------+---------+---------+----------+
 ~~~
+
+<hr style="height:30px; visibility:hidden;" />
+
+<figure>
+<img src="https://raw.githubusercontent.com/avoholo/avoholo.github.io/master/_posts/Spark_sparksql/1.png" alt="cheat_sheet">
+<figcaption>Fig 2. Spark Read Format Cheat Sheet</figcaption>
+</figure>
+
+
+이번 포스트에선 `Scala`의 **Array API**를 통해 WordCount를 수행하고, `Spark`의 **RDD API**로 동일하게 WordCount를 수행 했을 때 **어떤 차이점이 있는지 알아볼 예정**이다.
+
+<br>
+
+##### 3. Dataframe vs Scala Datasets
+
+~~~scala
+import spark.implicits._
+
+// Spark SQL Method #1
+df.printSchema()
+root
+ |-- article_id: string (nullable = true)
+ |-- author_id: string (nullable = true)
+ |-- viewer_id: string (nullable = true)
+ |-- view_date: string (nullable = true)
+
+// Scala Method #2
+df.dtypes.foreach(f=>println(f._1+","+f._2))
+// article_id,StringType
+// author_id,StringType
+// viewer_id,StringType
+// view_date,StringType
+
+// Select only the "_c0" column
+ df.select("_c0").show()
++----------+
+|       _c0|
++----------+
+|article_id|
+|         1|
+|         1|
+|         2|
+|         2|
+|         4|
+|         3|
+|         3|
++----------+
+
+// Select everybody, but increment the age by 1
+df.select($"name", $"age" + 1).show()
+
+// Select people older than 21
+df.filter($"age" > 21).show()
+
+// Count people by age
+df.groupBy("age").count().show()
+~~~
+
+<hr style="height:30px; visibility:hidden;" />
 
 
 
 <br>
 
 ### Python
+
+##### 1. SparkSession
 
 ~~~python
 from pyspark.sql import SparkSession
@@ -71,9 +143,22 @@ df = spark.read.json(path)
 df.printSchema()
 ~~~
 
+<hr style="height:30px; visibility:hidden;" />
+
+##### 2. Create Dataframes
+
+~~~scala
+val df = spark.read.csv(path)
+df.show()
+~~~
+
+
+
 <br>
 
 ### Java
+
+##### 1. SparkSession
 
 ~~~scala
 import org.apache.spark.sql.SparkSession;
@@ -83,6 +168,19 @@ SparkSession spark = SparkSession
   .appName("Java Spark SQL basic example")
   .config("spark.some.config.option", "some-value")
   .getOrCreate();
+~~~
+<hr style="height:30px; visibility:hidden;" />
+
+##### 2. Create Dataframes
+
+~~~scala
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Row;
+
+Dataset<Row> df = spark.read().csv("examples/src/main/resources/people.json");
+
+// Displays the content of the DataFrame to stdout
+df.show();
 ~~~
 
 
