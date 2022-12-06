@@ -13,18 +13,16 @@ image: "/_posts/Spark_basic_cmd/default_post_image.png"
 <figcaption>Fig 1. Apache Spark</figcaption>
 </figure>
 
-이번 포스트에선 `Scala`의 **Array API**를 통해 WordCount를 수행하고, `Spark`의 **RDD API**로 동일하게 WordCount를 수행 했을 때 **어떤 차이점이 있는지 알아볼 예정**이다.
-
-
+이번 포스트에선 `SparkSQL`을 통해  **Structured Processing**을 수행해 보고 Spark RDD API와 **어떤 차이점이 있는지 알아볼 예정**이다.
 
 ### Scala
 
-##### 1. SparkSession
+#### 1. SparkSession
 
 ~~~bash
 import org.apache.spark.sql.SparkSession
 
-var path = "/data/data/SQL/Data/views.csv"
+val path = "/data/data/SQL/Data/views/views.csv"
 
 val spark = SparkSession
   .builder()
@@ -35,11 +33,11 @@ val spark = SparkSession
 // For implicit conversions - converting RDDs to DataFrames
 import spark.implicits._
 ~~~
-***Tip :** `Spark-Shell` 실행시 **SparkContext**는 `sc`라고 정의되어있고 **Spark-Session**은 `spark`라고 되어 있다.
+*`Spark-Shell` 실행시 **SparkContext**는 `sc`라고 정의되어있고 **Spark-Session**은 `spark`라고 되어 있다.
 
 <hr style="height:30px; visibility:hidden;" />
 
-##### 2. Create Dataframes
+#### 2. Create Dataframes
 
 ~~~scala
 val df = spark.read.format("csv").option("header", "true").load(path)
@@ -55,21 +53,39 @@ df.show()
 |         3|        4|        4|2019-07-21|
 |         3|        4|        4|2019-07-21|
 +----------+---------+---------+----------+
+
+// 사전에 정의한 Schema를 사용하고 싶다면 아래 방법을 사용한다.
+import org.apache.spark.sql.types.{StructType, StructField, StringType, IntegerType, DateType, BooleanType, YearMonthIntervalType};
+
+val schema = StructType(
+  List(
+    StructField("article_id", IntegerType, true),
+    StructField("author_id", IntegerType, true),
+	StructField("viewer_id", IntegerType, true),
+	StructField("view_date", DateType, true)
+  )
+)
+
+var df = spark.read.format("csv").schema(schema).option("header", "true").load(path)
 ~~~
 
 <hr style="height:30px; visibility:hidden;" />
 
 <figure>
 <img src="https://raw.githubusercontent.com/avoholo/avoholo.github.io/master/_posts/Spark_sparksql/1.png" alt="cheat_sheet">
-<figcaption>Fig 2. Spark Read Format Cheat Sheet</figcaption>
+<figcaption>Fig 2. Spark Read Write Cheat Sheet</figcaption>
 </figure>
-
-
-이번 포스트에선 `Scala`의 **Array API**를 통해 WordCount를 수행하고, `Spark`의 **RDD API**로 동일하게 WordCount를 수행 했을 때 **어떤 차이점이 있는지 알아볼 예정**이다.
 
 <br>
 
-##### 3. Dataframe vs Scala Datasets
+#### 3. Dataframe vs Scala Datasets
+
+Spark에서 `Dataframe`은 단순히 Row로 이루어진 Scala & Java API의 Dataset 이기에 아래 예시는 **Untyped Transformation**이다. Scala `Dataset`은 아래에서 추가로 다룰거지만 RDD와 비슷한 개념이다. 
+
+대신 다른점이 한가지 있는데:
+
+- `RDD`는 `Java Serializer`(kyro)를 사용하는대신 
+- `Dataset`은 `Specialized Encoder`를 사용하여 직렬화한다.
 
 ~~~scala
 import spark.implicits._
@@ -77,24 +93,23 @@ import spark.implicits._
 // Spark SQL Method #1
 df.printSchema()
 root
- |-- article_id: string (nullable = true)
- |-- author_id: string (nullable = true)
- |-- viewer_id: string (nullable = true)
- |-- view_date: string (nullable = true)
+ |-- article_id: integer (nullable = true)
+ |-- author_id: integer (nullable = true)
+ |-- viewer_id: integer (nullable = true)
+ |-- view_date: date (nullable = true)
 
 // Scala Method #2
 df.dtypes.foreach(f=>println(f._1+","+f._2))
-// article_id,StringType
-// author_id,StringType
-// viewer_id,StringType
-// view_date,StringType
+// article_id,IntegerType
+// author_id,IntegerType
+// viewer_id,IntegerType
+// view_date,DateType
 
-// Select only the "_c0" column
- df.select("_c0").show()
-+----------+
-|       _c0|
+// Select only the "article_id" column
+ df.select("article_id").show()
 +----------+
 |article_id|
++----------+
 |         1|
 |         1|
 |         2|
@@ -104,278 +119,255 @@ df.dtypes.foreach(f=>println(f._1+","+f._2))
 |         3|
 +----------+
 
-// Select everybody, but increment the age by 1
-df.select($"name", $"age" + 1).show()
+// Select all, but increment the article by 1
+df.select($"view_date", $"article_id" + 1).show()
++----------+----------------+
+| view_date|(article_id + 1)|
++----------+----------------+
+|2019-08-01|               2|
+|2019-08-02|               2|
+|2019-08-01|               3|
+|2019-08-02|               3|
+|2019-07-22|               5|
+|2019-07-21|               4|
+|2019-07-21|               4|
++----------+----------------+
 
-// Select people older than 21
-df.filter($"age" > 21).show()
+// Select article_id larger than 2
+df.filter($"article_id" > 2).show()
++----------+---------+---------+----------+
+|article_id|author_id|viewer_id| view_date|
++----------+---------+---------+----------+
+|         4|        7|        1|2019-07-22|
+|         3|        4|        4|2019-07-21|
+|         3|        4|        4|2019-07-21|
++----------+---------+---------+----------+
 
-// Count people by age
-df.groupBy("age").count().show()
+// Count article by id
+df.groupBy("article_id").count().show()
++----------+-----+
+|article_id|count|
++----------+-----+
+|         1|    2|
+|         3|    2|
+|         4|    1|
+|         2|    2|
++----------+-----+
 ~~~
 
 <hr style="height:30px; visibility:hidden;" />
 
+#### 4. With SQL
 
+~~~scala
+// Temporary
+df.createOrReplaceTempView("views")
+
+// Global Temporary
+df.createGlobalTempView("views")
+
+// SQL
+var sql=("""
+    SELECT * 
+    FROM VIEWS
+""")
+
+// Option 1. show results directly
+spark.sql(sql).show()
+
+// Option 2. save output and show()
+dfsql = spark.sql(sql)
+dfsql.show()
+~~~
 
 <br>
 
 ### Python
 
-##### 1. SparkSession
+#### 1. SparkSession
 
 ~~~python
 from pyspark.sql import SparkSession
 
 spark = SparkSession\
         .builder\
-        .appName('Python Spark SQL basic example')\
+        .appName('Python Spark SQL example')\
         .config('spark.some.config.option', 'some-value')\
         .getOrCreate()
 
 # sparkContext 객체 생성
 sc = spark.sparkContext
 
-path = '/data/data/SQL/Data/views.csv'
-df = spark.read.json(path)
-
-# show schema with printSchema()
-df.printSchema()
+path = "/data/data/SQL/Data/colors/multiline.json"
+df = spark.read.option("multiline", "true").json(path)
 ~~~
 
 <hr style="height:30px; visibility:hidden;" />
 
-##### 2. Create Dataframes
+#### 2. Create Dataframes
 
-~~~scala
-val df = spark.read.csv(path)
+~~~python
+# show schema with printSchema()
+df.printSchema()
+root
+ |-- City: string (nullable = true)
+ |-- RecordNumber: long (nullable = true)
+ |-- State: string (nullable = true)
+ |-- ZipCodeType: string (nullable = true)
+ |-- Zipcode: long (nullable = true)
+    
 df.show()
++-------------------+------------+-----+-----------+-------+
+|               City|RecordNumber|State|ZipCodeType|Zipcode|
++-------------------+------------+-----+-----------+-------+
+|PASEO COSTA DEL SUR|           2|   PR|   STANDARD|    704|
+|       BDA SAN LUIS|          10|   PR|   STANDARD|    709|
++-------------------+------------+-----+-----------+-------+
 ~~~
 
 
 
+json type은 데이터가 `[]` 안에 들어가있지 않으면 **multiline**으로 인식하지 않아 1개의 Row만 읽는다.
+
+~~~scala
+[{
+  "RecordNumber": 2,
+  "Zipcode": 704,
+  "ZipCodeType": "STANDARD",
+  "City": "PASEO COSTA DEL SUR",
+  "State": "PR"
+},
+{
+  "RecordNumber": 10,
+  "Zipcode": 709,
+  "ZipCodeType": "STANDARD",
+  "City": "BDA SAN LUIS",
+  "State": "PR"
+}]
+~~~
+
+<hr style="height:30px; visibility:hidden;" />
+
+#### 3. Dataframe
+
+~~~python
+df.select("Zipcode").show()
++-------+
+|Zipcode|
++-------+
+|    704|
+|    709|
++-------+
+
+df.select(df['City'], df['RecordNumber'] + 1).show()
++-------------------+------------------+
+|               City|(RecordNumber + 1)|
++-------------------+------------------+
+|PASEO COSTA DEL SUR|                 3|
+|       BDA SAN LUIS|                11|
++-------------------+------------------+
+
+
+df.filter(df['RecordNumber'] > 9).show()
++------------+------------+-----+-----------+-------+
+|        City|RecordNumber|State|ZipCodeType|Zipcode|
++------------+------------+-----+-----------+-------+
+|BDA SAN LUIS|          10|   PR|   STANDARD|    709|
++------------+------------+-----+-----------+-------+
+
+df.groupBy("RecordNumber").count().show()
+~~~
+
 <br>
+
+#### 4. With SQL
+
+~~~scala
+// Temporary
+df.createOrReplaceTempView("multi")
+
+// Global Temporary
+df.createGlobalTempView("multi")
+
+// SQL
+sql=("""
+    SELECT * 
+    FROM MULTI
+""")
+
+// Option 1. show results directly
+spark.sql(sql).show()
+
+// Option 2. save output and show()
+dfsql = spark.sql(sql)
+dfsql.show()
+~~~
+
+<br>
+
+
 
 ### Java
 
-##### 1. SparkSession
+#### 1. SparkSession
 
-~~~scala
+~~~java
 import org.apache.spark.sql.SparkSession;
 
 SparkSession spark = SparkSession
   .builder()
-  .appName("Java Spark SQL basic example")
+  .appName("Java Spark SQL example")
   .config("spark.some.config.option", "some-value")
   .getOrCreate();
 ~~~
 <hr style="height:30px; visibility:hidden;" />
 
-##### 2. Create Dataframes
+#### 2. Create Dataframes
 
-~~~scala
+~~~java
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 
-Dataset<Row> df = spark.read().csv("examples/src/main/resources/people.json");
+String path = "/data/data/SQL/Data/colors/multiline.json";
+Dataset<Row> df = spark.read().csv(path);
 
 // Displays the content of the DataFrame to stdout
 df.show();
 ~~~
 
-
-
 <br>
 
-#### 4. 컴파일 & jar로 아카이브
+#### 3. Dataframe
 
-~~~bash
-cd $SPARK_BASE/projects/spark
-scalac -d target/ src/lab/core/wordcount/WordCountScala.scala
+~~~java
+df.select("Zipcode").show();
++-------+
+|Zipcode|
++-------+
+|    704|
+|    709|
++-------+
 
-find $SPARK_PROJECT/target
-/spark/projects/spark/target
-/spark/projects/spark/target/lab
-/spark/projects/spark/target/lab/core
-/spark/projects/spark/target/lab/core/wordcount
-/spark/projects/spark/target/lab/core/wordcount/WordCount$.class
-/spark/projects/spark/target/lab/core/wordcount/WordCount$$anon$2.class
-/spark/projects/spark/target/lab/core/wordcount/WordCount$$anon$1.class
-/spark/projects/spark/target/lab/core/wordcount/WordCount.class
+df.select(col("City"), col("RecordNumber").plus(1)).show();
++-------------------+------------------+
+|               City|(RecordNumber + 1)|
++-------------------+------------------+
+|PASEO COSTA DEL SUR|                 3|
+|       BDA SAN LUIS|                11|
++-------------------+------------------+
 
-cd $SPARK_PROJECT/target && jar cvf ../wordcountscala.jar ./lab/core/wordcount/*
-added manifest
-adding: lab/core/wordcount/WordCount$$anon$1.class(in = 4457) (out= 1493)(deflated 66%)
-adding: lab/core/wordcount/WordCount$$anon$2.class(in = 1136) (out= 643)(deflated 43%)
-adding: lab/core/wordcount/WordCount.class(in = 639) (out= 520)(deflated 18%)
-adding: lab/core/wordcount/WordCount$.class(in = 8628) (out= 3480)(deflated 59%)
+
+df.filter(col("RecordNumber").gt(9)).show();
++------------+------------+-----+-----------+-------+
+|        City|RecordNumber|State|ZipCodeType|Zipcode|
++------------+------------+-----+-----------+-------+
+|BDA SAN LUIS|          10|   PR|   STANDARD|    709|
++------------+------------+-----+-----------+-------+
+
+df.groupBy("RecordNumber").count().show()
 ~~~
 
 <br>
-
-#### 5. wordcount application 실행
-
-~~~bash
-cd $SPARK_PROJECT
-scala -classpath "$SPARK_PROJECT/wordcountscala.jar" lab.core.wordcount.WordCountScala
->>>> WordCountScala....
->>>> Line Count : 109
->>>> word count : (site,,1)
-...
-...
-
-# Cat과 More 명령어로 정상적으로 결과가 나왔는지 확인
-cat $SPARK_HOME/README.wordcount_scala | more
-~~~
-
-<br>
-
-<br>
-
-### Spark WordCount
-
-#### 1. WordCountSpark class 생성
-
-~~~python
-vi $SPARK_BASE/projects/spark/src/lab/core/wordcount/WordCountSpark.scala
-~~~
-
-
-
-#### 2. 코드 작성
-
-~~~scala
-package lab.core.wordcount
-
-import org.apache.spark.SparkContext
-
-object WordCountSpark {
-
-  def main(args: Array[String]): Unit = {
-    println(">>>> WordCountSpark....")
-    
-    var input = "/spark/spark3/README.md"
-    var output = "/spark/spark3/README.wordcount_spark"
-    var delimiter = " "
-
-    val sc = new SparkContext()
-    val rdd = sc.textFile(input)
-    println(">>>> Line Count : " + rdd.count())
-    val rdd2 = rdd.flatMap(line => line.split(delimiter))
-    val rdd3 = rdd2.map(word => (word, 1))
-    val rdd4 = rdd3.groupBy(tuple => tuple._1)
-    val rdd5 = rdd4.map(tuple_grouped => (tuple_grouped._1, tuple_grouped._2.map(tuple => tuple._2)))
-    val rdd6 = rdd5.map(tuple_grouped => (tuple_grouped._1, tuple_grouped._2.reduce((v1, v2) => v1 + v2)))
-    rdd6.foreach(word_count => println(">>>> word count : " + word_count))
-    val rdd7 = rdd6.sortBy(tuple => -tuple._2)
-    rdd7.foreach(word_count => println(">>>> word count (count desc) : " + word_count))
-
-   
-    val ordering = new Ordering[(String, Int)] {
-      override def compare(a: (String, Int), b: (String, Int)) = {
-        if((a._2 compare b._2) == 0) (a._1 compare b._1) else -(a._2 compare b._2)
-      }
-    }
-    
-    val rdd8 = rdd6.sortBy(tuple => tuple)(ordering, implicitly[scala.reflect.ClassTag[(String, Int)]])
-
-    rdd8.foreach(word_count => println(">>>> word count (count desc, word asc) : " + word_count))
-
-    rdd8.saveAsTextFile(output)
-
-    sc.stop()
-  }
-}
-~~~
-
-<br>
-
-#### 3. 컴파일 & jar로 아카이브
-
-**diff :** Spark 전용으로 컴파일 할 경우에는 `spark-core` jar가 필요하다. 
-
-~~~bash
-cd $SPARK_BASE/projects/spark
-scalac -classpath "$SPARK_HOME/jars/spark-core_2.12-3.2.1.jar" -d target/ src/lab/core/wordcount/WordCountSpark.scala
-
-
-cd $SPARK_PROJECT/target && jar cvf ../wordcountspark.jar ./lab/core/wordcount/WordCountSpark*.class
-added manifest
-adding: lab/core/wordcount/WordCount$$anon$1.class(in = 4457) (out= 1493)(deflated 66%)
-adding: lab/core/wordcount/WordCount$$anon$2.class(in = 1136) (out= 643)(deflated 43%)
-adding: lab/core/wordcount/WordCount.class(in = 639) (out= 520)(deflated 18%)
-adding: lab/core/wordcount/WordCount$.class(in = 8628) (out= 3480)(deflated 59%)
-~~~
-
-<br>
-
-#### 4. Spark-submit으로 실행
-
-`--master` 옵션을 주지 않으면 default로 `local` 에서 실행하게 된다. 주의하자.
-
-~~~bash
-cd $SPARK_PROJECT/target && $SPARK_HOME/bin/spark-submit --master spark://spark-master01:7177 --class lab.core.wordcount.WordCountSpark $SPARK_PROJECT/wordcountspark.jar
-...
-...
-22/11/14 18:23:38 INFO MapOutputTrackerMasterEndpoint: Asked to send map output locations for shuffle 2 to 192.168.51.183:45308
-22/11/14 18:23:38 INFO TaskSetManager: Finished task 1.0 in stage 12.0 (TID 17) in 35 ms on 1*.**.**.**3 (executor 2) (1/2)
-22/11/14 18:23:38 INFO TaskSetManager: Finished task 0.0 in stage 12.0 (TID 16) in 55 ms on 1*.**.**.**4 (executor 0) (2/2)
-~~~
-
-<br>
-
-#### 5. 결과 확인
-
-`var output="/spark/spark3/README.wordcount_spark"`  에서 확인해보자.
-
-
-
-##### local에서 실행했을 경우
-
-input으로 넣었던 README.md가 **분산처리**되어 결과도 `local`에 **분산저장**이 된것을 확인 할 수 있다.
-
-~~~bash
-$SPARK_HOME/bin/spark-submit --class lab.core.wordcount.WordCountSpark $SPARK_PROJECT/wordcountspark.jar
-ls $SPARK_HOME | grep README
-README.md
-README.wordcount_scala
-README.wordcount_spark
-
-cd $SPARK_HOME/README.wordcount_spark && ls -al
-part-00000
-.part-00000.crc
-part-00001
-.part-00001.crc
-_SUCCESS
-._SUCCESS.crc
-
-cat part-* | more
-~~~
-
-<br>
-
-##### application으로 실행했을 경우
-
-아래와 같이 Spark Application으로 실행 할 경우, Spark Job이 병렬로 처리되어 각각 다른 노드에 파일이 분산 저장된것을 볼 수 있다.
-
-~~~bash
-ssh spark-worker01 ls $SPARK_HOME/README.wordcount_spark
-_temporary
-
-ssh spark-worker02 ls $SPARK_HOME/README.wordcount_spark
-_temporary
-
-ssh spark-worker03 ls $SPARK_HOME/README.wordcount_spark
-ls: cannot access /spark/spark3/README.wordcount_spark: No such file or directory
-~~~
-
-
-
-
-
-<br>
-
-
 
 > Related :
 > <a href="/multinode_setup">Spark Cluster Setup, </a> 
